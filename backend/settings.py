@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'rest_framework',
+    'backend'
 ]
 
 MIDDLEWARE = [
@@ -80,8 +81,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dcsa2u4r83ti40',
+        'USER': 'ykkhlpzylsaffr',
+        'PASSWORD': '6cb8728d180830cbce91821021b9f89de4c6344c908db8fd6fb860cfe596f998',
+        'HOST': 'ec2-54-83-55-122.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
