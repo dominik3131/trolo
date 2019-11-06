@@ -25,6 +25,6 @@ class TableDetailsSerializer(serializers.ModelSerializer):
 class ListSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
-        fields = ['url','name','id_table']
+        fields = ['name','id_table']
     
         
