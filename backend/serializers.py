@@ -6,25 +6,26 @@ from .models import Lista
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
+        fields = ['id','url', 'username', 'email', 'groups']
 
-
+class ListaSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lista
+        fields = ['id','name','id_table']
+    
+    def to_representation(self, instance):
+        return {'id': instance.id, 'name': instance.name}
+    
+    
 class TablesSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ['name', 'visibility']
+        fields = ['id','name', 'visibility']
+
 
 class TableDetailsSerializer(serializers.ModelSerializer):
-    lists = serializers.RelatedField(source='list', read_only=True)
-    
+    listy = ListaSimpleSerializer(many=True)
+
     class Meta:
         model = Table
-        fields = ['name', 'visibility','lists']
-
-
-class ListSimpleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lista
-        fields = ['name','id_table']
-    
-        
+        fields = ['id','name', 'visibility','listy']    

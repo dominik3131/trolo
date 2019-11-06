@@ -45,18 +45,23 @@ class Table(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("table_detail", kwargs={"pk": self.pk})
+        return reverse("table_detzail", kwargs={"pk": self.pk})
 
 
 class Lista(models.Model):
     name = models.CharField(max_length=100)
-    id_table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    id_table = models.ForeignKey(Table, related_name='listy', on_delete=models.CASCADE)
     lookup_field = "name"
+    
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse("list_detail", kwargs={"pk": self.name})
+
+    class Meta: 
+        verbose_name = "Lista"
+        verbose_name_plural = "Listy"
 
 
 

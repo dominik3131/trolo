@@ -50,22 +50,22 @@ class TableDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
         ('PUT', 'PATCH'): TablesSimpleSerializer
     }
 
-class ListObjList(generics.ListCreateAPIView):
+class ListaList(generics.ListCreateAPIView):
     '''
     API: /lists/
     Method: GET/PUT/PATCH
     '''
     queryset = Lista.objects.all()
-    serializer_class = ListSimpleSerializer
+    serializer_class = ListaSimpleSerializer
 
 
-class ListObjDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
+class ListaDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /list/:list_id
     Method: GET/PUT/PATCH
     '''
     queryset = Lista.objects.all()
     method_serializer_classes = {
-        ('GET', ): ListSimpleSerializer,
-        ('PUT', 'PATCH'): ListSimpleSerializer
+        ('GET', ): ListaSimpleSerializer,
+        ('PUT', 'PATCH'): ListaSimpleSerializer
     }
