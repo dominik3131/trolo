@@ -48,15 +48,15 @@ class Table(models.Model):
         return reverse("table_detail", kwargs={"pk": self.pk})
 
 
-class List(models.Model):
+class Lista(models.Model):
     name = models.CharField(max_length=100)
     id_table = models.ForeignKey(Table, on_delete=models.CASCADE)
-
+    lookup_field = "name"
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("list_detail", kwargs={"pk": self.pk})
+        return reverse("list_detail", kwargs={"pk": self.name})
 
 
 
@@ -64,7 +64,7 @@ class Card(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     active_to = models.DateTimeField()
-    id_list = models.ForeignKey(List,on_delete=models.CASCADE)
+    id_list = models.ForeignKey(Lista,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

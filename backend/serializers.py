@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Table
-from .models import List
+from .models import Lista
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -24,7 +24,7 @@ class TableDetailsSerializer(serializers.ModelSerializer):
 
 class ListSimpleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = List
+        model = Lista
         fields = ['name','id_table']
     
         

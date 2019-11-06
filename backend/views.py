@@ -55,7 +55,7 @@ class ListObjList(generics.ListCreateAPIView):
     API: /lists/
     Method: GET/PUT/PATCH
     '''
-    queryset = List.objects.all()
+    queryset = Lista.objects.all()
     serializer_class = ListSimpleSerializer
 
 
@@ -64,7 +64,7 @@ class ListObjDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView)
     API: /list/:list_id
     Method: GET/PUT/PATCH
     '''
-    queryset = Table.objects.all()
+    queryset = Lista.objects.all()
     method_serializer_classes = {
         ('GET', ): ListSimpleSerializer,
         ('PUT', 'PATCH'): ListSimpleSerializer
