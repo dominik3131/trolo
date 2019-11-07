@@ -20,7 +20,7 @@ class ListaSimpleSerializer(serializers.ModelSerializer):
 class TablesSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ['id','name', 'visibility']
+        fields = ['id','name', 'visibility','background', 'last_open','last_modyfied','favourite','id_team']
 
 
 class TableDetailsSerializer(serializers.ModelSerializer):
@@ -28,4 +28,4 @@ class TableDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Table
-        fields = ['id','name', 'visibility','listy']    
+        fields = ['id','name', 'visibility','listy','background', 'last_open','last_modyfied','favourite','id_team']

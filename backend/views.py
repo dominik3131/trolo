@@ -32,7 +32,7 @@ class MethodSerializerView(object):
 
 class TableList(generics.ListCreateAPIView):
     '''
-    API: /tables/
+    API: /api/tables/
     Method: GET/PUT/PATCH
     '''
     queryset = Table.objects.all()
@@ -41,7 +41,7 @@ class TableList(generics.ListCreateAPIView):
 
 class TableDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
-    API: /table/:table_id
+    API: /api/table/:table_id
     Method: GET/PUT/PATCH
     '''
     queryset = Table.objects.all()
@@ -52,7 +52,7 @@ class TableDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
 
 class ListaList(generics.ListCreateAPIView):
     '''
-    API: /lists/
+    API: /api/lists/
     Method: GET/PUT/PATCH
     '''
     queryset = Lista.objects.all()
@@ -61,7 +61,7 @@ class ListaList(generics.ListCreateAPIView):
 
 class ListaDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
-    API: /list/:list_id
+    API: /api/list/:list_id
     Method: GET/PUT/PATCH
     '''
     queryset = Lista.objects.all()
