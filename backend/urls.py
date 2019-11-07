@@ -1,7 +1,15 @@
 from django.contrib import admin
 from django.urls import path
-from .views import index
+from rest_framework.urlpatterns import format_suffix_patterns
+from .views import *
+
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
+    path('api/tables/', TableList.as_view()),
+    path('api/table/<int:pk>', TableDetail.as_view()),
+    path('api/lists/', ListaList.as_view()),
+    path('api/list/<int:pk>', ListaDetail.as_view())
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

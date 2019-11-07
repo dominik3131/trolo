@@ -1,15 +1,22 @@
 import React from 'react';
 import './App.css';
-import Boards from "../boards/Boards";
-import BoardModel from "../../data-models/BoardModel";
+import Tables from "../tables/Tables";
+import {Route, Switch} from 'react-router'
+
 const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-          <Boards boards={[new BoardModel()]}></Boards>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <div className="header">
+                TROLO
+            </div>
+            <div className="content">
+                <Switch>
+                    <Route path="/tables" component={Tables}/>
+                </Switch>
+                <Tables></Tables>
+            </div>
+        </div>
+    );
 }
 
 export default App;
