@@ -51,7 +51,7 @@ export default class Tables extends React.Component<Props, State> {
                 </MDBRow>
             </MDBContainer>;
         } else {
-            return <div></div>
+            return null;
         }
     }
     privateTables = () => {
@@ -79,7 +79,7 @@ export default class Tables extends React.Component<Props, State> {
                 </MDBRow>
             </MDBContainer>;
         } else {
-            return <div></div>
+            return null;
         }
     }
 
@@ -108,7 +108,7 @@ export default class Tables extends React.Component<Props, State> {
                 </MDBRow>
             </MDBContainer>;
         } else {
-            return <div></div>
+            return null;
         }
     }
 
@@ -120,5 +120,4 @@ export default class Tables extends React.Component<Props, State> {
             this.favouriteTables(),
         ]
     }
-
 }

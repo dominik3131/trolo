@@ -2,10 +2,12 @@ import React, {Component} from 'react';
 import {MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter} from 'mdbreact';
 import axios from 'axios';
 import TableModel from "../../data-models/TableModel";
+
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.withCredentials = true;
-class CreateTable extends Component {
+
+export default class CreateTable extends Component {
     state = {
         modal: false,
         background: '',
@@ -45,25 +47,30 @@ class CreateTable extends Component {
         table.visibility = this.state.visibility;
         table.id_team = this.state.team;
         console.log(table);
-        axios.post(`api/tables/`, {...table},{headers: {
-            'Content-Type': 'application/json'
-        }})
+        axios.post(`api/tables/`, {...table}, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
             .then(() => {
-                    alert('Created');
+                alert('Created');
             }).catch((error: { response: any; request: any; message: any; config: any; }) => {
-                if (error.response) {
-                    alert(error.response.data);
-                } else if (error.request) {
-                    alert(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    alert('Error'+ error.message);
-                }});
+            if (error.response) {
+                alert(error.response.data);
+            } else if (error.request) {
+                alert(error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                alert('Error' + error.message);
+            }
+        });
         this.setState({
             background: '',
             name: '',
             visibility: 0,
-            team: undefined})
+            team: undefined
+        })
+        this.toggle();
     }
 
     render() {
@@ -110,5 +117,3 @@ class CreateTable extends Component {
         );
     }
 }
-
-export default CreateTable;

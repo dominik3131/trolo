@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Tables from "../tables/Tables";
 import {Route, Switch} from 'react-router'
+import Table from "../tables/Table";
 
 const App: React.FC = () => {
     return (
@@ -11,9 +12,9 @@ const App: React.FC = () => {
             </div>
             <div className="content">
                 <Switch>
-                    <Route path="/tables" component={Tables}/>
+                    <Route exact path="/" component={Tables}/>
+                    <Route path="/table/:id" component={Table}/>
                 </Switch>
-                <Tables></Tables>
             </div>
         </div>
     );
