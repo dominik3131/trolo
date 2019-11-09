@@ -118,7 +118,7 @@ export default class Table extends Component<Props, State> {
         let divStyle = {
             backgroundImage: 'url(' + imgUrl + ')'
         }
-        return <div style={divStyle } className={'singleTable h-100'}>
+        return <div style={divStyle } className={'singleTable'}>
             <MDBContainer  className={'form-inline'}>
                 {this.tableName()}
                 <button type="button" className="btn btn-danger bmd-btn-fab" onClick={this.toggleFavorite}>
