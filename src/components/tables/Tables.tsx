@@ -3,24 +3,34 @@ import TableModel from "../../data-models/TableModel";
 import {MDBContainer, MDBRow, MDBCol} from "mdbreact";
 import {Link} from "react-router-dom";
 import CreateTable from "./CreateTable";
+import axios from "axios";
+import Spinner from "../../utils/Spinner";
 
 interface Props {
 }
 
 interface State {
     tables: TableModel[]
+    isLoading: boolean
 }
 
 export default class Tables extends React.Component<Props, State> {
 
     constructor({props}: { props: any }) {
         super(props);
-        this.state = {tables: []};
+        this.state = {
+            tables: [],
+            isLoading: true
+        };
+        this.fetchTables();
     }
 
-    componentDidMount(): void {
-        fetch('api/tables/').then(res => res.json())
-            .then(res => this.setState({tables: res}))
+    fetchTables() {
+        axios.get(`/api/tables`)
+            .then((resp) => {
+                let tables: TableModel[] = resp.data;
+                this.setState({tables: resp.data, isLoading: false});
+            });
     }
 
     lastSeenTables = () => {
@@ -51,7 +61,7 @@ export default class Tables extends React.Component<Props, State> {
                 </MDBRow>
             </MDBContainer>;
         } else {
-            return <div></div>
+            return null;
         }
     }
     privateTables = () => {
@@ -79,12 +89,12 @@ export default class Tables extends React.Component<Props, State> {
                 </MDBRow>
             </MDBContainer>;
         } else {
-            return <div></div>
+            return null;
         }
     }
 
     favouriteTables = () => {
-        let  favouriteTables: any[];
+        let favouriteTables: any[];
         favouriteTables = [];
         this.state.tables.filter(table => table.favourite)
             .every(table =>
@@ -98,7 +108,7 @@ export default class Tables extends React.Component<Props, State> {
                         </Link>
                     </MDBCol>)
             );
-        if ( favouriteTables.length > 0) {
+        if (favouriteTables.length > 0) {
             return <MDBContainer className="mt-5">
                 <MDBRow className="mb-1">
                     <h3><i className="far fa-star"></i> Favourite</h3>
@@ -108,11 +118,13 @@ export default class Tables extends React.Component<Props, State> {
                 </MDBRow>
             </MDBContainer>;
         } else {
-            return <div></div>
+            return null;
         }
     }
 
-    render() {
+    view(){
+        if(this.state.isLoading)
+            return <Spinner></Spinner>
         return [
             <CreateTable></CreateTable>,
             this.lastSeenTables(),
@@ -120,5 +132,7 @@ export default class Tables extends React.Component<Props, State> {
             this.favouriteTables(),
         ]
     }
-
+    render() {
+        return this.view()
+    }
 }
