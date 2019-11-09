@@ -1,3 +1,6 @@
-.nameInput {
-    width:250px;
+.singleTable {
+    height: 90vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }

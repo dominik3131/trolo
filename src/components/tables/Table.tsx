@@ -101,7 +101,7 @@ export default class Table extends Component<Props, State> {
 
         } else {
             return [
-                this.state.table.name,
+                <h4 className="h2-responsive stroke"><strong>{this.state.table.name}</strong></h4>,
                 <button type="button" className="btn btn-success" onClick={this.toggleNameInput}>
                     Edit Name
                 </button>
@@ -110,19 +110,25 @@ export default class Table extends Component<Props, State> {
     }
 
     view() {
+
         if (this.state.isLoading) {
             return <Spinner></Spinner>
         }
-        return <MDBContainer className={'form-inline'}>
-
-            {this.tableName()}
-            <button type="button" className="btn btn-danger bmd-btn-fab" onClick={this.toggleFavorite}>
-                {this.favouriteButtonStar()}
-            </button>
-            <div>
-                {/*    TODO wyswietlic kazda liste*/}
-            </div>
-        </MDBContainer>
+        let imgUrl = this.state.table.background;
+        let divStyle = {
+            backgroundImage: 'url(' + imgUrl + ')'
+        }
+        return <div style={divStyle } className={'singleTable h-100'}>
+            <MDBContainer  className={'form-inline'}>
+                {this.tableName()}
+                <button type="button" className="btn btn-danger bmd-btn-fab" onClick={this.toggleFavorite}>
+                    {this.favouriteButtonStar()}
+                </button>
+                <div>
+                    {/*    TODO wyswietlic kazda liste*/}
+                </div>
+            </MDBContainer>
+        </div>
     }
 
     render() {
