@@ -7,7 +7,7 @@ export default class TableModel {
     favourite: boolean | undefined;
     last_open: Date  = new Date(Date.now());
     last_modyfied: Date  = new Date(Date.now());
-    lists: ListModel[] | undefined;
+    listy: ListModel[] | undefined;
     background: string = 'https://image.shutterstock.com/image-photo/colorful-flower-on-dark-tropical-260nw-721703848.jpg';
     id_team: number | undefined;
 }

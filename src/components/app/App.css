@@ -27,3 +27,6 @@
 .header{
   min-height: 10%;
 }
+.divstyle{
+    clear: both;
+}

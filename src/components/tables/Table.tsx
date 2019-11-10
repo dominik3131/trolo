@@ -4,6 +4,8 @@ import './Table.css';
 import axios from 'axios';
 import TableModel from "../../data-models/TableModel";
 import Spinner from "../../utils/Spinner";
+import Card from "react-bootstrap/Card";
+import ListModel from '../../data-models/ListModel';
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -17,7 +19,8 @@ interface State {
     table: TableModel
     nameInputOpen: boolean
     newTableName: string
-    isLoading: boolean
+    isLoading: boolean,
+    listy: ListModel
 }
 
 export default class Table extends Component<Props, State> {
@@ -28,7 +31,8 @@ export default class Table extends Component<Props, State> {
             table: new TableModel(),
             nameInputOpen: false,
             newTableName: '',
-            isLoading: true
+            isLoading: true,
+            listy: new ListModel()
         }
         this.toggleNameInput = this.toggleNameInput.bind(this);
         this.nameChanged = this.nameChanged.bind(this);
@@ -121,15 +125,54 @@ export default class Table extends Component<Props, State> {
         return <div style={divStyle } className={'singleTable'}>
             <MDBContainer  className={'form-inline'}>
                 {this.tableName()}
+                
                 <button type="button" className="btn btn-danger bmd-btn-fab" onClick={this.toggleFavorite}>
                     {this.favouriteButtonStar()}
                 </button>
                 <div>
-                    {/*    TODO wyswietlic kazda liste*/}
+                    <div className="divstyle">
+                    ejej123
+                        <table>
+                            <td>
+                                {this.renderLists(this.state.table)}
+                            </td>
+                            <td><button type="button" className="btn btn-primary"> Add list</button></td>
+                        </table>
+                    </div>
+                    {/* Pa  TODO wyswietlic kazda liste*/}
                 </div>
             </MDBContainer>
         </div>
+        
     }
+    renderLists(table: TableModel) {
+        const elements = this.state.table.listy;
+        const items = [];
+        if(elements != undefined)
+        {
+            
+            for (const value of elements) {
+                items.push(<Card>
+                    <Card.Body>
+                        <tr>
+                            <td>{value.name}</td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" className="btn btn-primary"> Add Card</button></td>
+                            <td><button type="button" className="btn btn-primary"> Rename Card</button></td>
+                            <td><button type="button" className="btn btn-primary"> Delete Card</button></td>
+                    </tr></Card.Body></Card>)
+              }
+              
+        }        
+        return (
+          <div>
+            {items}
+          </div>
+          
+        )
+      }
+
 
     render() {
         return (
