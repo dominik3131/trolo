@@ -35,10 +35,10 @@ class Table(models.Model):
     )
     name = models.CharField(max_length=100)
     visibility = models.IntegerField(default=0, choices=VISIBILITY)
-    last_open = models.DateTimeField()
-    last_modyfied = models.DateTimeField()
+    last_open = models.DateTimeField(blank=True, null=True)
+    last_modyfied = models.DateTimeField(blank=True, null=True)
     favourite = models.BooleanField(default=False)
-    background = models.CharField(max_length=200)
+    background = models.CharField(max_length=200,default=None, blank=True, null=True)
     id_team = models.ForeignKey(Team, on_delete=models.CASCADE,related_name='team_id')
 
     def __str__(self):
@@ -67,9 +67,10 @@ class Lista(models.Model):
 
 class Card(models.Model):
     name = models.CharField(max_length=200)
-    description = models.CharField(max_length=500)
-    active_to = models.DateTimeField()
-    id_list = models.ForeignKey(Lista,on_delete=models.CASCADE)
+    description = models.CharField(max_length=500,default=None, blank=True, null=True)
+    active_to = models.DateTimeField(default=None, blank=True, null=True)
+    id_list = models.ForeignKey(Lista, related_name='cards',on_delete=models.CASCADE)
+    lookup_field = "name"
 
     def __str__(self):
         return self.name
