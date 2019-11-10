@@ -6,6 +6,7 @@ import TableModel from "../../data-models/TableModel";
 import Spinner from "../../utils/Spinner";
 import Card from "react-bootstrap/Card";
 import ListModel from '../../data-models/ListModel';
+import { valueToNode } from '@babel/types';
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -18,9 +19,10 @@ interface Props {
 interface State {
     table: TableModel
     nameInputOpen: boolean
+    nameInputOpenList: boolean
     newTableName: string
     isLoading: boolean,
-    listy: ListModel
+    listy: ListModel[]
 }
 
 export default class Table extends Component<Props, State> {
@@ -30,13 +32,19 @@ export default class Table extends Component<Props, State> {
         this.state = {
             table: new TableModel(),
             nameInputOpen: false,
+            nameInputOpenList: false,
             newTableName: '',
             isLoading: true,
-            listy: new ListModel()
+            listy: []
         }
         this.toggleNameInput = this.toggleNameInput.bind(this);
         this.nameChanged = this.nameChanged.bind(this);
         this.updateName = this.updateName.bind(this);
+
+        this.toggleNameInputList = this.toggleNameInputList.bind(this);
+        this.nameChangedLists = this.nameChangedLists.bind(this);
+        this.updateListName = this.updateListName.bind(this);
+
         this.fetchTable();
     }
 
@@ -65,7 +73,6 @@ export default class Table extends Component<Props, State> {
                     .then((resp) => {
                     });
             });
-
     }
 
     favouriteButtonStar() {
@@ -131,7 +138,7 @@ export default class Table extends Component<Props, State> {
                 </button>
                 <div>
                     <div className="divstyle">
-                    ejej123
+                    witam1234
                         <table>
                             <td>
                                 {this.renderLists(this.state.table)}
@@ -145,12 +152,14 @@ export default class Table extends Component<Props, State> {
         </div>
         
     }
+
+//=========================================================================================================================================
+
     renderLists(table: TableModel) {
         const elements = this.state.table.listy;
         const items = [];
         if(elements != undefined)
         {
-            
             for (const value of elements) {
                 items.push(<Card>
                     <Card.Body>
@@ -159,11 +168,10 @@ export default class Table extends Component<Props, State> {
                         </tr>
                         <tr>
                             <td><button type="button" className="btn btn-primary"> Add Card</button></td>
-                            <td><button type="button" className="btn btn-primary"> Rename Card</button></td>
+                            <td>{this.ListName(value)}</td>
                             <td><button type="button" className="btn btn-primary"> Delete Card</button></td>
                     </tr></Card.Body></Card>)
               }
-              
         }        
         return (
           <div>
@@ -171,7 +179,72 @@ export default class Table extends Component<Props, State> {
           </div>
           
         )
-      }
+    }
+
+    toggleNameInputList() {
+        this.setState({nameInputOpenList: !this.state.nameInputOpenList})
+    }
+
+
+    updateListName() {
+        if(this.state.table.listy != undefined)
+        {
+            this.updateList(this.state.table.listy);
+        }
+        this.toggleNameInputList();
+    }
+
+    nameChangedLists(e: any) {
+        let table = this.state.table;
+        if(table.listy != undefined)
+        {
+            for (const value of table.listy) 
+            {
+                if(e == value.name)
+                {
+                    value.name = e.target.value;
+                } 
+            }
+        }
+        this.setState({table: table})
+    }
+
+    ListName(listy: ListModel) {
+        if(this.state.table.listy != undefined)
+            for (const value of this.state.table.listy) {
+                if(value == listy)
+                {
+                    if (this.state.nameInputOpenList) {
+                        return [
+                            <input className="form-control" defaultValue={value.name || ''}
+                                   onChange={this.nameChangedLists}></input>,
+                            <button type="button" className="btn btn-primary" onClick={this.updateListName}>
+                                Save
+                            </button>,
+                            <button type="button" className="btn btn-danger" onClick={this.toggleNameInputList}>
+                                Cancel
+                            </button>
+                        ]
+            
+                    } else {
+                        return [
+                            <button type="button" className="btn btn-primary" onClick={this.toggleNameInputList}>
+                                Edit NameE
+                            </button>
+                        ]
+                    }
+                }
+            
+    }
+    }
+
+    updateList(listy: ListModel[]) {
+        this.setState({listy: listy});
+        axios.put(`/api/lists/${this.props.match.params}`, listy)
+            .then((resp) => {
+                this.setState({listy: resp.data});
+            });
+    }
 
 
     render() {
