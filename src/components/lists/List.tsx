@@ -4,7 +4,7 @@ import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 
 interface Props {
-    id: number;
+    list: ListModel
 }
 
 interface State {
@@ -29,7 +29,7 @@ export default class List extends Component<Props, State> {
     }
 
     fetchList() {
-        axios.get(`/api/list/${this.props.id}`)
+        axios.get(`/api/lists/${this.props.list.id}`)
             .then((resp) => {
                 this.setState({list: resp.data, isLoading: false});
             });
@@ -38,7 +38,10 @@ export default class List extends Component<Props, State> {
     view() {
         if (this.state.isLoading) {
             return <div className="card">
-                <div className={"card-body"}><SmallSpinner/></div>
+                <div className={"card-body"}>
+                    {this.props.list.name}
+                    <SmallSpinner/>
+                </div>
             </div>
         }
         return <div className="card">
