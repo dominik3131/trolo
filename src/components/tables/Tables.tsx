@@ -39,11 +39,11 @@ export default class Tables extends React.Component<Props, State> {
             return new Date(b.last_open).getTime() - new Date(a.last_open).getTime();
         })
             .filter((table, index) => (index < 4))
-            .every(table =>
+            .forEach(table =>
                 lastTables.push(
                     <MDBCol key={table.id} md="3">
                         <Link to={{
-                            pathname: `/table/${table.id}`
+                            pathname: `/tables/${table.id}`
                         }}>
                             {table.name}
                             <img src={table.background} className="img-thumbnail" alt=""/>
@@ -68,11 +68,11 @@ export default class Tables extends React.Component<Props, State> {
         let privateTables: any[];
         privateTables = [];
         this.state.tables.filter(table => table.visibility === 0)
-            .every(table =>
+            .forEach(table =>
                 privateTables.push(
                     <MDBCol key={table.id} md="3">
                         <Link to={{
-                            pathname: `/table/${table.id}`
+                            pathname: `/tables/${table.id}`
                         }}>
                             {table.name}
                             <img src={table.background} className="img-thumbnail" alt=""/>
@@ -97,11 +97,11 @@ export default class Tables extends React.Component<Props, State> {
         let favouriteTables: any[];
         favouriteTables = [];
         this.state.tables.filter(table => table.favourite)
-            .every(table =>
+            .forEach(table =>
                 favouriteTables.push(
                     <MDBCol key={table.id} md="3">
                         <Link to={{
-                            pathname: `/table/${table.id}`
+                            pathname: `/tables/${table.id}`
                         }}>
                             {table.name}
                             <img src={table.background} className="img-thumbnail" alt=""/>

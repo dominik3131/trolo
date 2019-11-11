@@ -5,6 +5,8 @@ import axios from 'axios';
 import TableModel from "../../data-models/TableModel";
 import Spinner from "../../utils/Spinner";
 import List from "../lists/List";
+import CreateList from "../lists/CreateList";
+import ListModel from "../../data-models/ListModel";
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -47,19 +49,19 @@ export default class Table extends Component<Props, State> {
     updateTable(table: TableModel) {
         table.last_modyfied = new Date(Date.now());
         this.setState({table: table});
-        axios.put(`/api/table/${this.props.match.params.id}`, table)
+        axios.put(`/api/tables/${this.props.match.params.id}`, table)
             .then((resp) => {
                 this.setState({table: resp.data});
             });
     }
 
     fetchTable() {
-        axios.get(`/api/table/${this.props.match.params.id}`)
+        axios.get(`/api/tables/${this.props.match.params.id}`)
             .then((resp) => {
                 let table: TableModel = resp.data;
                 table.last_open = new Date(Date.now());
                 this.setState({table: resp.data, isLoading: false});
-                axios.put(`/api/table/${this.props.match.params.id}`, table)
+                axios.put(`/api/tables/${this.props.match.params.id}`, table)
                     .then();
             });
     };
@@ -75,15 +77,23 @@ export default class Table extends Component<Props, State> {
         this.setState({nameInputOpen: !this.state.nameInputOpen})
     }
 
-    updateName() {
+    listAdded(newList: ListModel) {
+        let table = this.state.table;
+        if (table.listy)
+            table.listy.push(newList);
+        this.setState({table:table});
         this.updateTable(this.state.table);
+    }
+
+    updateName() {
+        let table = this.state.table;
+        table.name = this.state.newTableName;
+        this.updateTable(table);
         this.toggleNameInput();
     }
 
     nameChanged(e: any) {
-        let table = this.state.table;
-        table.name = e.target.value;
-        this.setState({table: table})
+        this.setState({newTableName: e.target.value})
     }
 
     tableName() {
@@ -91,10 +101,10 @@ export default class Table extends Component<Props, State> {
             return [
                 <input className="form-control" defaultValue={this.state.table.name || ''}
                        onChange={this.nameChanged}/>,
-                <button type="button" className="btn btn-primary" onClick={this.updateName}>
+                <button type="button" className="btn btn-primary btn-sm" onClick={this.updateName}>
                     Save
                 </button>,
-                <button type="button" className="btn btn-danger" onClick={this.toggleNameInput}>
+                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameInput}>
                     Cancel
                 </button>
             ]
@@ -102,7 +112,7 @@ export default class Table extends Component<Props, State> {
         } else {
             return [
                 <h4 className="h2-responsive stroke"><strong>{this.state.table.name}</strong></h4>,
-                <button type="button" className="btn btn-success" onClick={this.toggleNameInput}>
+                <button type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
                     Edit Name
                 </button>
             ]
@@ -117,14 +127,18 @@ export default class Table extends Component<Props, State> {
         let divStyle = {
             backgroundImage: 'url(' + imgUrl + ')'
         };
+        let listCreator;
+        if (this.state.table.id) {
+            listCreator = <CreateList afterAdd={this.listAdded.bind(this)} tableId={this.state.table.id}/>
+        }
         return <div style={divStyle} className={'singleTable'}>
             <MDBContainer>
                 <div className={'form-inline'}>
                     {this.tableName()}
-                    <button type="button" className="btn btn-danger bmd-btn-fab" onClick={this.toggleFavorite}>
+                    <button type="button" className="btn btn-danger bmd-btn-fab btn-sm" onClick={this.toggleFavorite}>
                         {this.favouriteButtonStar()}
                     </button>
-                    <button type="button" className="btn btn-primary"> Add list</button>
+                    {listCreator}
                 </div>
 
                 {this.renderLists()}
@@ -138,8 +152,7 @@ export default class Table extends Component<Props, State> {
         const items: any[] = [];
         if (this.state.table.listy) {
             this.state.table.listy.forEach(list => {
-                    if (list.id)
-                        items.push(<List id={list.id}/>);
+                        items.push(<List list={list}/>);
                 }
             )
         }

@@ -18,11 +18,11 @@ const App: React.FC = () => {
             <div className="content">
                 <Switch>
                     <Route exact path="/" component={Tables}/>
-                    <Route path="/table/:id" component={Table}/>
+                    <Route path="/tables/:id" component={Table}/>
                 </Switch>
             </div>
         </div>
     );
-}
+};
 
 export default App;
