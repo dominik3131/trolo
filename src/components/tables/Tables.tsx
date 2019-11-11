@@ -16,7 +16,7 @@ interface State {
 
 export default class Tables extends React.Component<Props, State> {
 
-    constructor({props}: { props: any }) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             tables: [],
@@ -28,7 +28,6 @@ export default class Tables extends React.Component<Props, State> {
     fetchTables() {
         axios.get(`/api/tables`)
             .then((resp) => {
-                let tables: TableModel[] = resp.data;
                 this.setState({tables: resp.data, isLoading: false});
             });
     }
@@ -40,11 +39,11 @@ export default class Tables extends React.Component<Props, State> {
             return new Date(b.last_open).getTime() - new Date(a.last_open).getTime();
         })
             .filter((table, index) => (index < 4))
-            .every(table =>
+            .forEach(table =>
                 lastTables.push(
                     <MDBCol key={table.id} md="3">
                         <Link to={{
-                            pathname: `/table/${table.id}`
+                            pathname: `/tables/${table.id}`
                         }}>
                             {table.name}
                             <img src={table.background} className="img-thumbnail" alt=""/>
@@ -54,7 +53,7 @@ export default class Tables extends React.Component<Props, State> {
         if (lastTables.length > 0) {
             return <MDBContainer className="mt-5">
                 <MDBRow className="mb-1">
-                    <h3><i className="far fa-user"></i> Last Seen</h3>
+                    <h3><i className="far fa-user"/> Last Seen</h3>
                 </MDBRow>
                 <MDBRow className="mb-2">
                     {lastTables}
@@ -63,16 +62,17 @@ export default class Tables extends React.Component<Props, State> {
         } else {
             return null;
         }
-    }
+    };
+
     privateTables = () => {
         let privateTables: any[];
         privateTables = [];
         this.state.tables.filter(table => table.visibility === 0)
-            .every(table =>
+            .forEach(table =>
                 privateTables.push(
                     <MDBCol key={table.id} md="3">
                         <Link to={{
-                            pathname: `/table/${table.id}`
+                            pathname: `/tables/${table.id}`
                         }}>
                             {table.name}
                             <img src={table.background} className="img-thumbnail" alt=""/>
@@ -82,7 +82,7 @@ export default class Tables extends React.Component<Props, State> {
         if (privateTables.length > 0) {
             return <MDBContainer className="mt-5">
                 <MDBRow className="mb-1">
-                    <h3><i className="far fa-clock"></i> Private</h3>
+                    <h3><i className="far fa-clock"/> Private</h3>
                 </MDBRow>
                 <MDBRow className="mb-2">
                     {privateTables}
@@ -91,17 +91,17 @@ export default class Tables extends React.Component<Props, State> {
         } else {
             return null;
         }
-    }
+    };
 
     favouriteTables = () => {
         let favouriteTables: any[];
         favouriteTables = [];
         this.state.tables.filter(table => table.favourite)
-            .every(table =>
+            .forEach(table =>
                 favouriteTables.push(
                     <MDBCol key={table.id} md="3">
                         <Link to={{
-                            pathname: `/table/${table.id}`
+                            pathname: `/tables/${table.id}`
                         }}>
                             {table.name}
                             <img src={table.background} className="img-thumbnail" alt=""/>
@@ -111,7 +111,7 @@ export default class Tables extends React.Component<Props, State> {
         if (favouriteTables.length > 0) {
             return <MDBContainer className="mt-5">
                 <MDBRow className="mb-1">
-                    <h3><i className="far fa-star"></i> Favourite</h3>
+                    <h3><i className="far fa-star"/> Favourite</h3>
                 </MDBRow>
                 <MDBRow className="mb-2">
                     {favouriteTables}
@@ -120,18 +120,19 @@ export default class Tables extends React.Component<Props, State> {
         } else {
             return null;
         }
-    }
+    };
 
-    view(){
-        if(this.state.isLoading)
-            return <Spinner></Spinner>
+    view() {
+        if (this.state.isLoading)
+            return <Spinner/>;
         return [
-            <CreateTable></CreateTable>,
+            <CreateTable/>,
             this.lastSeenTables(),
             this.privateTables(),
             this.favouriteTables(),
         ]
-    }
+    };
+
     render() {
         return this.view()
     }
