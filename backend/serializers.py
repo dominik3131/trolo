@@ -1,31 +1,59 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Table
-from .models import Lista
+from .models import *
+
+# Default serializer class to allow overriding methods
+class CustomSerializer(serializers.ModelSerializer):
+
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super(CustomSerializer, self).get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['id','url', 'username', 'email', 'groups']
 
-class ListaSimpleSerializer(serializers.ModelSerializer):
+
+class CardSimpleSerializer(CustomSerializer):
+    class Meta:
+        model = Card
+        fields = '__all__'
+
+class CardDetailsSerializer(CustomSerializer):
+    class Meta:
+        model = Card
+        fields = '__all__'
+
+
+class ListaSimpleSerializer(CustomSerializer):
     class Meta:
         model = Lista
-        fields = ['id','name','id_table']
-    
-    def to_representation(self, instance):
-        return {'id': instance.id, 'name': instance.name}
-    
-    
-class TablesSimpleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Table
-        fields = ['id','name', 'visibility','background', 'last_open','last_modyfied','favourite','id_team']
+        fields = '__all__'
 
-
-class TableDetailsSerializer(serializers.ModelSerializer):
-    listy = ListaSimpleSerializer(many=True)
+class ListaDetailsSerializer(CustomSerializer):
+    cards = CardSimpleSerializer(many=True)
 
     class Meta:
+        model = Lista
+        fields = '__all__'
+        extra_fields = ['cards']
+
+
+class TablesSimpleSerializer(CustomSerializer):
+    class Meta:
         model = Table
-        fields = ['id','name', 'visibility','listy','background', 'last_open','last_modyfied','favourite','id_team']
+        fields = '__all__'
+
+
+class TableDetailsSerializer(CustomSerializer):
+    listy = ListaDetailsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Table
+        fields = '__all__'
+        extra_fields = ['listy']

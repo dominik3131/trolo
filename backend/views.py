@@ -33,27 +33,24 @@ class MethodSerializerView(object):
 class TableList(generics.ListCreateAPIView):
     '''
     API: /api/tables/
-    Method: GET/PUT/PATCH
+    Method: GET/POST
     '''
     queryset = Table.objects.all()
     serializer_class = TablesSimpleSerializer
 
 
-class TableDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
+class TableDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
-    API: /api/table/:table_id
+    API: /api/tables/:table_id
     Method: GET/PUT/PATCH
     '''
     queryset = Table.objects.all()
-    method_serializer_classes = {
-        ('GET', ): TableDetailsSerializer,
-        ('PUT', 'PATCH'): TablesSimpleSerializer
-    }
+    serializer_class = TableDetailsSerializer
 
 class ListaList(generics.ListCreateAPIView):
     '''
     API: /api/lists/
-    Method: GET/PUT/PATCH
+    Method: GET/POST
     '''
     queryset = Lista.objects.all()
     serializer_class = ListaSimpleSerializer
@@ -61,11 +58,32 @@ class ListaList(generics.ListCreateAPIView):
 
 class ListaDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
-    API: /api/list/:list_id
+    API: /api/lists/:list_id
     Method: GET/PUT/PATCH
     '''
     queryset = Lista.objects.all()
     method_serializer_classes = {
-        ('GET', ): ListaSimpleSerializer,
+        ('GET', ): ListaDetailsSerializer,
         ('PUT', 'PATCH'): ListaSimpleSerializer
     }
+
+
+class CardList(generics.ListCreateAPIView):
+    '''
+    API: /api/cards/
+    Method: GET/POST
+    '''
+    queryset = Card.objects.all()
+    serializer_class = CardSimpleSerializer
+
+class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/cards/:card_id
+    Method: GET/PUT/PATCH
+    '''
+    queryset = Card.objects.all()
+    method_serializer_classes = {
+        ('GET', ): CardDetailsSerializer,
+        ('PUT', 'PATCH'): CardSimpleSerializer
+    }
+
