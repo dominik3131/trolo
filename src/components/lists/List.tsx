@@ -97,16 +97,11 @@ export default class List extends Component<Props, State> {
         }
     }
 
-    // updateList(listy: ListModel[]) {
     updateList(list: ListModel) {
-        //Paweł
-        //1. odwołujesz się do ${this.props.match.params} czyli do parametru w linku, którym jest id tabeli nie listy
-        //2. w metodzie do obsługi aktualizacji pojedyńczej listy wysyłasz tablicę list, musisz wysłać tylko tabelkę, którą aktualizujesz
-        //3. jak robisz takie funkcie to pod F12 w zakladce siec masz zapytania i patrz czy dobre dane i adresy sa
-        // this.setState({listy: listy});
-        // axios.put(`/api/lists/${this.props.match.params}`, listy)
-        //     .then((resp) => {
-        //         this.setState({listy: resp.data});
-        //     });
+        this.setState({list: list});
+        axios.put(`/api/lists/${this.props.list.id}`, list)
+             .then((resp) => {
+                 this.setState({list: resp.data});
+             });
     };
 }
