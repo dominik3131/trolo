@@ -11,6 +11,7 @@ interface State {
     isLoading: boolean
     list: ListModel;
     listNameInputOpen: boolean,
+    toggleDeleteList: boolean
 }
 
 export default class List extends Component<Props, State> {
@@ -18,12 +19,15 @@ export default class List extends Component<Props, State> {
         super(props);
         this.state = {
             isLoading: true,
-            list: new ListModel(),
-            listNameInputOpen: false
+            list: this.props.list,
+            listNameInputOpen: false,
+            toggleDeleteList: false
         };
         this.toggleNameInputList = this.toggleNameInputList.bind(this);
+        this.toggleNameDeleteList = this.toggleNameDeleteList.bind(this);
         this.nameChangedLists = this.nameChangedLists.bind(this);
         this.updateListName = this.updateListName.bind(this);
+        this.updateListToDelete = this.updateListToDelete.bind(this);
         this.listName = this.listName.bind(this);
         this.fetchList();
     }
@@ -47,9 +51,9 @@ export default class List extends Component<Props, State> {
         return <div className="card">
             <div className={"card-body"}>
                 <h4>{this.state.list.name}</h4>
-                <button type="button" className="btn btn-primary btn-sm"> Add Card</button>
                 {this.listName()}
-                <button type="button" className="btn btn-primary btn-sm"> Delete Card</button>
+                {this.listDelete()}
+                <button type="button" className="btn btn-primary btn-sm"> Add Card</button>
             </div>
         </div>
     }
@@ -64,10 +68,19 @@ export default class List extends Component<Props, State> {
         this.setState({listNameInputOpen: !this.state.listNameInputOpen})
     }
 
+    toggleNameDeleteList() {
+        this.setState({toggleDeleteList: !this.state.toggleDeleteList})
+    }
 
     updateListName() {
         this.updateList(this.state.list);
         this.toggleNameInputList();
+    }
+
+    updateListToDelete() {
+        this.updateListDelete(this.state.list);
+        console.log("Witamy w piekle")
+        this.toggleNameDeleteList();
     }
 
     nameChangedLists(e: any) {
@@ -97,11 +110,41 @@ export default class List extends Component<Props, State> {
         }
     }
 
+    listDelete() {
+        if (this.state.toggleDeleteList) {
+            return [
+                'Do you want to delete: '+ this.state.list.name,
+                       //onChange={this.nameChangedLists}/>,
+                <button type="button" className="btn btn-primary btn-sm" onClick={this.updateListToDelete}>
+                    Yes
+                </button>,
+                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameDeleteList}>
+                    No
+                </button>
+            ]
+        } else {
+            return [
+                <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
+                    Delete ListE
+                </button>
+            ]
+        }
+    }
+
     updateList(list: ListModel) {
         this.setState({list: list});
-        axios.put(`/api/lists/${this.props.list.id}`, list)
+        axios.put(`/api/lists/${this.state.list.id}`, list)
              .then((resp) => {
                  this.setState({list: resp.data});
+             });
+    };
+
+    updateListDelete(list: ListModel) {
+
+        this.setState({list: list});
+        axios.delete(`/api/lists/${this.state.list.id}`)
+             .then((resp) => {
+                  this.setState({list: resp.data});
              });
     };
 }
