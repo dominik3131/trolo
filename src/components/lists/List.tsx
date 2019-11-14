@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import ListModel from "../../data-models/ListModel";
-import Spinner from "../../utils/Spinner";
 import Card from "../cards/Card";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import CardModel from "../../data-models/CardModel";
 
 interface Props {
-    list: any
+    list: ListModel
+    afterModify: any
 }
 
 interface State {
@@ -46,7 +46,7 @@ export default class List extends Component<Props, State> {
         let list = this.state.list;
         if (list.cards)
             list.cards.push(newCard);
-        this.setState({list:list});
+        this.setState({list: list});
         this.updateList(this.state.list);
     }
 
@@ -62,9 +62,9 @@ export default class List extends Component<Props, State> {
         return <div className="card">
             <div className={"card-body"}>
                 <h4>{this.state.list.name}</h4>
+                {this.toolbar()}
                 {this.listName()}
                 {this.listDelete()}
-                <button type="button" className="btn btn-primary btn-sm"> Add Card</button>
                 {this.renderCards()}
             </div>
         </div>
@@ -74,7 +74,7 @@ export default class List extends Component<Props, State> {
         const items: any[] = [];
         if (this.state.list.cards) {
             this.state.list.cards.forEach(card => {
-                        items.push(<Card card={card}/>);
+                    items.push(<Card key={card.id} card={card}/>);
                 }
             )
         }
@@ -86,7 +86,7 @@ export default class List extends Component<Props, State> {
     }
 
     render() {
-        return <div className={'col-3'}>
+        return <div className={'col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3'}>
             {this.view()}
         </div>;
     }
@@ -105,8 +105,7 @@ export default class List extends Component<Props, State> {
     }
 
     updateListToDelete() {
-        this.updateListDelete(this.state.list);
-        console.log("Witamy w piekle")
+        this.deleteList(this.state.list);
         this.toggleNameDeleteList();
     }
 
@@ -122,55 +121,65 @@ export default class List extends Component<Props, State> {
                 <input className="form-control" defaultValue={this.state.list.name || ''}
                        onChange={this.nameChangedLists}/>,
                 <button type="button" className="btn btn-primary btn-sm" onClick={this.updateListName}>
-                    Save
+                    <i className="fas fa-check"/>
                 </button>,
                 <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameInputList}>
-                    Cancel
+                    <i className="far fa-times-circle"/>
                 </button>
             ]
         } else {
-            return [
-                <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
-                    Edit Name
-                </button>
-            ]
+            return null;
         }
+    }
+
+    toolbar() {
+        return <div className="btn-group btn-group-sm" role="group">
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
+                <i className="far fa-edit"/>
+            </button>
+            <button type="button" className="btn btn-primary btn-sm">
+                <i className="fas fa-plus"/>
+            </button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
+                <i className="fas fa-trash-alt"/>
+            </button>
+        </div>
     }
 
     listDelete() {
         if (this.state.toggleDeleteList) {
             return [
-                'Do you want to delete: '+ this.state.list.name,
-                <button type="button" className="btn btn-primary btn-sm" onClick={this.updateListToDelete}>
-                    Yes
-                </button>,
-                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameDeleteList}>
-                    No
-                </button>
+                <div>delete {this.state.list.name} ?</div>
+                ,
+                <div>
+                    <button type="button" className="btn btn-success btn-sm" onClick={this.updateListToDelete}>
+                        <i className="fas fa-check"/>
+                    </button>
+                    <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameDeleteList}>
+                        <i className="far fa-times-circle"/>
+                    </button>
+                </div>
             ]
         } else {
-            return [
-                <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
-                    Delete List
-                </button>
-            ]
+            return null;
         }
     }
 
     updateList(list: ListModel) {
         this.setState({list: list});
         axios.put(`/api/lists/${this.state.list.id}`, list)
-             .then((resp) => {
-                 this.setState({list: resp.data});
-             });
+            .then((resp) => {
+                this.setState({list: resp.data});
+                this.props.afterModify();
+            });
     };
 
-    updateListDelete(list: ListModel) {
-
+    deleteList(list: ListModel) {
         this.setState({list: list});
         axios.delete(`/api/lists/${this.state.list.id}`)
-             .then((resp) => {
-                  this.setState({list: resp.data});
-             });
+            .then((resp) => {
+                this.setState({list: resp.data});
+                this.props.afterModify();
+            });
     };
 }

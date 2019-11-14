@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {MDBContainer} from 'mdbreact';
 import './Table.css';
 import axios from 'axios';
 import TableModel from "../../data-models/TableModel";
@@ -81,7 +80,11 @@ export default class Table extends Component<Props, State> {
         let table = this.state.table;
         if (table.listy)
             table.listy.push(newList);
-        this.setState({table:table});
+        this.setState({table: table});
+        this.updateTable(this.state.table);
+    }
+
+    listModified() {
         this.updateTable(this.state.table);
     }
 
@@ -101,19 +104,19 @@ export default class Table extends Component<Props, State> {
             return [
                 <input className="form-control" defaultValue={this.state.table.name || ''}
                        onChange={this.nameChanged}/>,
-                <button type="button" className="btn btn-primary btn-sm" onClick={this.updateName}>
-                    Save
+                <button type="button" className="btn btn-success btn-sm" onClick={this.updateName}>
+                    <i className="fas fa-check"/>
                 </button>,
                 <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameInput}>
-                    Cancel
+                    <i className="far fa-times-circle"/>
                 </button>
             ]
 
         } else {
             return [
-                <h4 className="h2-responsive stroke"><strong>{this.state.table.name}</strong></h4>,
+                <h4 className="h2-responsive stroke">{this.state.table.name}</h4>,
                 <button type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
-                    Edit Name
+                    <i className="far fa-edit"/>
                 </button>
             ]
         }
@@ -125,14 +128,15 @@ export default class Table extends Component<Props, State> {
         }
         let imgUrl = this.state.table.background;
         let divStyle = {
-            backgroundImage: 'url(' + imgUrl + ')'
+            backgroundImage: 'url(' + imgUrl + ')',
+            backgroundAttachment: "scroll"
         };
         let listCreator;
         if (this.state.table.id) {
             listCreator = <CreateList afterAdd={this.listAdded.bind(this)} tableId={this.state.table.id}/>
         }
         return <div style={divStyle} className={'singleTable'}>
-            <MDBContainer>
+            <div className={'container'}>
                 <div className={'form-inline'}>
                     {this.tableName()}
                     <button type="button" className="btn btn-danger bmd-btn-fab btn-sm" onClick={this.toggleFavorite}>
@@ -142,7 +146,7 @@ export default class Table extends Component<Props, State> {
                 </div>
 
                 {this.renderLists()}
-            </MDBContainer>
+            </div>
         </div>
 
     }
@@ -151,7 +155,7 @@ export default class Table extends Component<Props, State> {
         const items: any[] = [];
         if (this.state.table.listy) {
             this.state.table.listy.forEach(list => {
-                        items.push(<List list={list}/>);
+                    items.push(<List key={list.id} afterModify={this.listModified.bind(this)} list={list}/>);
                 }
             )
         }

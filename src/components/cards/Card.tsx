@@ -23,10 +23,10 @@ export default class List extends Component<Props, State> {
             cardNameInputOpen: false,
             toggleCreate: false
         };
-        this.fetchCards();
+        this.fetchCard();
     }
 
-    fetchCards() {
+    fetchCard() {
         axios.get(`/api/cards/${this.props.card.id}`)
             .then((resp) => {
                 this.setState({cards: resp.data, isLoading: false});
@@ -45,8 +45,10 @@ export default class List extends Component<Props, State> {
         
         return <div className="card">
             <div className={"card-body"}>
-                <h4>{this.state.cards.name}</h4>
-                <button type="button" className="btn btn-primary btn-sm">Edit</button>
+                {this.state.cards.name}
+                <button type="button" className="btn btn-primary btn-sm">
+                    <i className="far fa-edit"/>
+                </button>
             </div>
         </div>
     }
