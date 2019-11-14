@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import ListModel from "../../data-models/ListModel";
+import Spinner from "../../utils/Spinner";
+import Card from "../cards/Card";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
+import CardModel from "../../data-models/CardModel";
 
 interface Props {
-    list: ListModel
+    list: any
 }
 
 interface State {
@@ -39,6 +42,14 @@ export default class List extends Component<Props, State> {
             });
     }
 
+    cardAdded(newCard: CardModel) {
+        let list = this.state.list;
+        if (list.cards)
+            list.cards.push(newCard);
+        this.setState({list:list});
+        this.updateList(this.state.list);
+    }
+
     view() {
         if (this.state.isLoading) {
             return <div className="card">
@@ -54,8 +65,24 @@ export default class List extends Component<Props, State> {
                 {this.listName()}
                 {this.listDelete()}
                 <button type="button" className="btn btn-primary btn-sm"> Add Card</button>
+                {this.renderCards()}
             </div>
         </div>
+    }
+
+    renderCards() {
+        const items: any[] = [];
+        if (this.state.list.cards) {
+            this.state.list.cards.forEach(card => {
+                        items.push(<Card card={card}/>);
+                }
+            )
+        }
+        return (
+            <div>
+                {items}
+            </div>
+        )
     }
 
     render() {
@@ -114,7 +141,6 @@ export default class List extends Component<Props, State> {
         if (this.state.toggleDeleteList) {
             return [
                 'Do you want to delete: '+ this.state.list.name,
-                       //onChange={this.nameChangedLists}/>,
                 <button type="button" className="btn btn-primary btn-sm" onClick={this.updateListToDelete}>
                     Yes
                 </button>,
@@ -125,7 +151,7 @@ export default class List extends Component<Props, State> {
         } else {
             return [
                 <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
-                    Delete ListE
+                    Delete List
                 </button>
             ]
         }

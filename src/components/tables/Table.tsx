@@ -142,7 +142,6 @@ export default class Table extends Component<Props, State> {
                 </div>
 
                 {this.renderLists()}
-
             </MDBContainer>
         </div>
 

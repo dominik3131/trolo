@@ -32,7 +32,7 @@ export default class CreateList extends Component<Props, State> {
     createList() {
         let list = new ListModel();
         list.name = this.state.listName;
-        list.id_table = this.props.tableId;
+        //list.id_table = this.props.tableId;
         axios.post('/api/lists/', list).then(
             (resp)=>{this.props.afterAdd(resp.data)}
         );
@@ -67,7 +67,5 @@ export default class CreateList extends Component<Props, State> {
 
     render() {
         return this.view();
-
-
     }
 }
