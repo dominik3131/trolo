@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from rest_framework.urlpatterns import format_suffix_patterns
 from .views import *
 
@@ -11,7 +11,9 @@ urlpatterns = [
     path('api/lists/', ListaList.as_view()),
     path('api/lists/<int:pk>', ListaDetail.as_view()),
     path('api/cards/', CardList.as_view()),
-    path('api/cards/<int:pk>', CardDetail.as_view())
+    path('api/cards/<int:pk>', CardDetail.as_view()),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
