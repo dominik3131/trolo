@@ -57,3 +57,10 @@ class TableDetailsSerializer(CustomSerializer):
         model = Table
         fields = '__all__'
         extra_fields = ['listy']
+
+# class UserSerializer(serializers.ModelSerializer):
+#     #snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'snippets']

@@ -1,11 +1,13 @@
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
+from rest_framework.decorators import  permission_classes
 # Serve Single Page Application
 index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 from rest_framework import generics
 from .models import *
 from .serializers import *
+from .custom_permissions import CanGetTable
 
 class MethodSerializerView(object):
     '''
@@ -35,10 +37,14 @@ class TableList(generics.ListCreateAPIView):
     API: /api/tables/
     Method: GET/POST
     '''
-    queryset = Table.objects.all()
+    #queryset = Table.objects.filter
     serializer_class = TablesSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Table.objects.filter(id_team__users__in= [user])
 
 
+@permission_classes([CanGetTable])
 class TableDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/tables/:table_id
