@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from rest_framework.urlpatterns import format_suffix_patterns
-from rest_auth.views import LoginView
+from rest_auth.views import LoginView, LogoutView
 from .views import *
 
 urlpatterns = [
@@ -17,7 +17,7 @@ urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('users/create', CreateUserView.as_view()),
     path('login/',LoginView.as_view(),name = 'login'),
- 
+    path('logout/',LogoutView.as_view(),name='logout'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

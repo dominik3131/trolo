@@ -3,8 +3,6 @@ from rest_framework import permissions
 class CanGetTable(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
         #if request.method in permissions.SAFE_METHODS:
         #    return True
         # Instance must have an attribute named `owner`.
@@ -13,8 +11,6 @@ class CanGetTable(permissions.BasePermission):
 class CanGetList(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
         #if request.method in permissions.SAFE_METHODS:
         #    return True
         # Instance must have an attribute named `owner`.
@@ -23,8 +19,6 @@ class CanGetList(permissions.BasePermission):
 class CanGetCard(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
         #if request.method in permissions.SAFE_METHODS:
         #    return True
         # Instance must have an attribute named `owner`.
