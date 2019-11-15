@@ -1,8 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from django.contrib.auth import get_user_model 
 from .models import *
 
-# Default serializer class to allow overriding methods
+
+UserModel = get_user_model()
+
 class CustomSerializer(serializers.ModelSerializer):
 
     def get_field_names(self, declared_fields, info):
@@ -13,11 +16,27 @@ class CustomSerializer(serializers.ModelSerializer):
         else:
             return expanded_fields
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id','url', 'username', 'email', 'groups']
 
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+
+        user = UserModel.objects.create(
+            username=validated_data['username']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+
+    class Meta:
+        model = UserModel
+        # Tuple of serialized model fields (see link [2])
+        fields = ( "id", "username", "password", )
 
 class CardSimpleSerializer(CustomSerializer):
     class Meta:
