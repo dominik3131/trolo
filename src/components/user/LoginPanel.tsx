@@ -9,9 +9,9 @@ axios.defaults.withCredentials = true;
 
 class Login extends Component {
     state = {
-        login:"",
+        username:"",
         password:"",
-        isLogged:false
+        redirect:false
     }
 
     constructor(props: Readonly<{}>) {
@@ -21,10 +21,15 @@ class Login extends Component {
 
     loginUser() {
         let user = new UserModel();
-        user.login = this.state.login;
+        user.username = this.state.username;
         user.password = this.state.password;
-        axios.get("/users?login="+user.login+"&password="+user.password)
-            .then(()=> this.state.isLogged=true )
+        axios.post(`/api/login/`, {...user},{headers: {
+            'Content-Type': 'application/json'
+        }})
+            .then( (response) => {
+                localStorage.setItem("user_token", response.data.key);
+                this.setState({redirect: true})
+            })
             .catch((error: { response: any; request: any; message: any; config: any; }) => {
                 if (error.response) {
                     this.forceUpdate()
@@ -43,18 +48,29 @@ class Login extends Component {
     }
 
     validateForm() {
-        return this.state.login.length > 0 && this.state.password.length > 0;
+        return this.state.username.length > 0 && this.state.password.length > 0;
     }
 
     setLogin = (event: { target: { value: any; }; }) => {
-        this.setState({login: event.target.value});
+        this.setState({username: event.target.value});
     };
     setPassword = (event: { target: { value: any; }; }) => {
         this.setState({password: event.target.value});
     };
 
+    renderRedirect = () => {
+        if (this.state.redirect) {
+          return <Redirect to='/' />
+        }
+      }
 
     render() {
+        const { redirect } = this.state;
+
+        if (redirect) {
+            return <Redirect to='/'/>;
+        }
+
         return (
             <MDBContainer>
                 <MDBRow>
@@ -91,12 +107,8 @@ class Login extends Component {
                     </MDBCol>
                 </MDBRow>
             </MDBContainer>
-
         )
 
-        if (this.state.isLogged) {
-            return <Redirect to='/boards'/>;
-        }
     }
 }
 

@@ -3,9 +3,9 @@ import './App.css';
 import Navbar from "../navbar/Navbar"
 import Tables from "../tables/Tables";
 import Login from "../user/Login"
+import Logout from "../user/Logout"
 import {Route, Switch} from 'react-router'
 import Table from "../tables/Table";
-import {Link} from "react-router-dom";
 
 const App: React.FC = () => {
     return (
@@ -18,6 +18,7 @@ const App: React.FC = () => {
                     <Route exact path="/" component={Tables}/>
                     <Route path="/tables/:id" component={Table}/>
                     <Route path="/login" component={Login}/>
+                    <Route path="/logout" component={Logout}/>
                 </Switch>
             </div>
         </div>

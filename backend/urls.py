@@ -14,10 +14,10 @@ urlpatterns = [
     path('api/lists/<int:pk>', ListaDetail.as_view()),
     path('api/cards/', CardList.as_view()),
     path('api/cards/<int:pk>', CardDetail.as_view()),
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('users/create', CreateUserView.as_view()),
-    path('login/',LoginView.as_view(),name = 'login'),
-    path('logout/',LogoutView.as_view(),name='logout'),
+    path('api/o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('api/users/create', CreateUserView.as_view()),
+    path('api/login/',LoginView.as_view(),name = 'login'),
+    path('api/logout/',LogoutView.as_view(),name='logout'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

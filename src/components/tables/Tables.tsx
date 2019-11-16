@@ -26,7 +26,11 @@ export default class Tables extends React.Component<Props, State> {
     }
 
     fetchTables() {
-        axios.get(`/api/tables`)
+        axios.get(`/api/tables`,{
+            headers: {
+                'Authorization': 'token' + localStorage.getItem('user_token')
+            }
+        })
             .then((resp) => {
                 this.setState({tables: resp.data, isLoading: false});
             });

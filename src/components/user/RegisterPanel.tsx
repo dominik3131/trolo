@@ -9,7 +9,7 @@ axios.defaults.withCredentials = true;
 
 class Register extends Component {
     state = {
-        login:"",
+        username:"",
         password:"",
         rep_pass:"",
     }
@@ -21,13 +21,13 @@ class Register extends Component {
 
     registerUser() {
         let user = new UserModel();
-        user.login = this.state.login;
+        user.username = this.state.username;
         user.password = this.state.password;
-        axios.post(`api/users/`, {...user},{headers: {
+        axios.post(`/api/users/create/`, {...user},{headers: {
             'Content-Type': 'application/json'
         }})
             .then(() => {
-                    alert('Created'); 
+                this.handleRegisterAction();
             }).catch((error: { response: any; request: any; message: any; config: any; }) => {
                 if (error.response) {
                     alert(error.response.data);
@@ -43,12 +43,16 @@ class Register extends Component {
         })
     }
 
+    handleRegisterAction() {
+
+    }
+
     validateForm() {
-        return this.state.login.length > 0 && this.state.password.length > 0 && this.state.password === this.state.rep_pass;
+        return this.state.username.length > 0 && this.state.password.length > 0 && this.state.password === this.state.rep_pass;
     }
 
     setLogin = (event: { target: { value: any; }; }) => {
-        this.setState({login: event.target.value});
+        this.setState({username: event.target.value});
     };
     setPassword = (event: { target: { value: any; }; }) => {
         this.setState({password: event.target.value});
