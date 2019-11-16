@@ -4,6 +4,7 @@ import Card from "../cards/Card";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import CardModel from "../../data-models/CardModel";
+import CreateCard from "../cards/CreateCard";
 
 interface Props {
     list: ListModel
@@ -115,6 +116,9 @@ export default class List extends Component<Props, State> {
         this.setState({list: list})
     }
 
+
+
+
     listName() {
         if (this.state.listNameInputOpen) {
             return [
@@ -133,13 +137,15 @@ export default class List extends Component<Props, State> {
     }
 
     toolbar() {
+        let cardCreator;
+        if (this.state.list.id) {
+            cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} listId={this.state.list.id}/>
+        }
         return <div className="btn-group btn-group-sm" role="group">
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
                 <i className="far fa-edit"/>
             </button>
-            <button type="button" className="btn btn-primary btn-sm">
-                <i className="fas fa-plus"/>
-            </button>
+            {cardCreator}
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
                 <i className="fas fa-trash-alt"/>
             </button>
