@@ -1,13 +1,16 @@
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
-from rest_framework.decorators import  permission_classes
+from rest_framework.decorators import  permission_classes,api_view
+from rest_auth.views import LoginView
 # Serve Single Page Application
 index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 from rest_framework import generics
 from .models import *
 from .serializers import *
-from .custom_permissions import CanGetTable
+from .custom_permissions import CanGetTable,CanGetList
+from rest_framework.generics import CreateAPIView
+from rest_framework import permissions
 
 class MethodSerializerView(object):
     '''
@@ -37,7 +40,6 @@ class TableList(generics.ListCreateAPIView):
     API: /api/tables/
     Method: GET/POST
     '''
-    #queryset = Table.objects.filter
     serializer_class = TablesSimpleSerializer
     def get_queryset(self):
         user = self.request.user
@@ -58,10 +60,14 @@ class ListaList(generics.ListCreateAPIView):
     API: /api/lists/
     Method: GET/POST
     '''
-    queryset = Lista.objects.all()
+
     serializer_class = ListaSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Lista.objects.filter(id_table__id_team__users__in= [user])
 
 
+@permission_classes([CanGetList])
 class ListaDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/lists/:list_id
@@ -81,6 +87,9 @@ class CardList(generics.ListCreateAPIView):
     '''
     queryset = Card.objects.all()
     serializer_class = CardSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Card.objects.filter(id_list__id_table__id_team__users__in= [user])
 
 class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
@@ -93,3 +102,17 @@ class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
         ('PUT', 'PATCH'): CardSimpleSerializer
     }
 
+class CreateUserView(CreateAPIView):
+
+    model = get_user_model()
+    permission_classes = [
+        permissions.AllowAny # Or anon users can't register
+    ]
+    serializer_class = UserSerializer
+
+class CustomLoginView(LoginView):
+    def get_response(self):
+        orginal_response = super().get_response()
+        mydata = {"message": "some message", "status": "success"}
+        orginal_response.data.update(mydata)
+        return orginal_response
