@@ -12,6 +12,7 @@ interface State {
     card: CardModel;
     cardNameInputOpen: boolean,
     toggleCreate: boolean
+    toggleDeleteCard: boolean
 }
 
 export default class List extends Component<Props, State> {
@@ -21,11 +22,14 @@ export default class List extends Component<Props, State> {
             isLoading: true,
             card: this.props.card,
             cardNameInputOpen: false,
-            toggleCreate: false
+            toggleCreate: false,
+            toggleDeleteCard: false
         };
         this.toggleNameInputCard = this.toggleNameInputCard.bind(this);
+        this.toggleNameDeleteCard = this.toggleNameDeleteCard.bind(this);
         this.nameChangedCards = this.nameChangedCards.bind(this);
         this.updateCardName = this.updateCardName.bind(this);
+        this.updateCardsToDelete = this.updateCardsToDelete.bind(this);
         this.fetchCard();
     }
 
@@ -40,10 +44,18 @@ export default class List extends Component<Props, State> {
         this.setState({cardNameInputOpen: !this.state.cardNameInputOpen})
     }
 
+    toggleNameDeleteCard() {
+        this.setState({toggleDeleteCard: !this.state.toggleDeleteCard})
+    }
+
     updateCardName() {
-        console.log("updeicik");
         this.updateCard(this.state.card);
         this.toggleNameInputCard();
+    }
+
+    updateCardsToDelete() {
+        this.deleteCard(this.state.card);
+        this.toggleNameDeleteCard();
     }
 
     nameChangedCards(e: any) {
@@ -69,12 +81,31 @@ export default class List extends Component<Props, State> {
         }
     }
 
+    cardDelete() {
+        if (this.state.toggleDeleteCard) {
+            return [
+                <div>delete this card ?</div>
+                ,
+                <div>
+                    <button type="button" className="btn btn-success btn-sm" onClick={this.updateCardsToDelete}>
+                        <i className="fas fa-check"/>
+                    </button>
+                    <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameDeleteCard}>
+                        <i className="far fa-times-circle"/>
+                    </button>
+                </div>
+            ]
+        } else {
+            return null;
+        }
+    }
+
     toolbar() {
         return <div className="btn-group btn-group-sm" role="group">
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputCard}>
                 <i className="far fa-edit"/>
             </button>
-            <button type="button" className="btn btn-primary btn-sm" >
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteCard}>
                 <i className="fas fa-trash-alt"/>
             </button>
         </div>
@@ -95,7 +126,7 @@ export default class List extends Component<Props, State> {
                 {this.state.card.name}
                 {this.toolbar()}
                 {this.cardName()}
-                
+                {this.cardDelete()}
             </div>
         </div>
     }
@@ -114,5 +145,12 @@ export default class List extends Component<Props, State> {
            });
     };
 
+    deleteCard(card: CardModel) {
+        this.setState({card: card});
+        axios.delete(`/api/cards/${this.state.card.id}`)
+            .then((resp) => {
+                this.setState({card: resp.data});
+            });
+    };
 
 }
