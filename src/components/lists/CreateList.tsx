@@ -33,7 +33,12 @@ export default class CreateList extends Component<Props, State> {
         let list = new ListModel();
         list.name = this.state.listName;
         list.id_table = this.props.tableId;
-        axios.post('/api/lists/', list).then(
+        this.toggleListNameInput();
+        axios.post('/api/lists/', list,{
+            headers: {
+                'Authorization': 'token' + localStorage.getItem('user_token')
+            }
+        }).then(
             (resp)=>{this.props.afterAdd(resp.data)}
         );
     }
@@ -51,23 +56,21 @@ export default class CreateList extends Component<Props, State> {
            return <div className={'form-inline'}>
                <input className="form-control" defaultValue={this.state.listName}
                       onChange={this.nameChanged}/>,
-               <button type="button" className="btn btn-primary btn-sm" onClick={this.createList}>
-                   Add
+               <button type="button" className="btn btn-success btn-sm" onClick={this.createList}>
+                   <i className="fas fa-check"/>
                </button>,
                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleListNameInput}>
-                   Cancel
+                   <i className="far fa-times-circle"/>
                </button>
             </div>
         } else {
             return <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleListNameInput}>
-                Add list
+                <i className="fas fa-plus"/>
             </button>
         }
     }
 
     render() {
         return this.view();
-
-
     }
 }

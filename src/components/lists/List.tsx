@@ -1,16 +1,20 @@
 import React, {Component} from 'react';
 import ListModel from "../../data-models/ListModel";
+import Card from "../cards/Card";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
+import CardModel from "../../data-models/CardModel";
 
 interface Props {
     list: ListModel
+    afterModify: any
 }
 
 interface State {
     isLoading: boolean
     list: ListModel;
     listNameInputOpen: boolean,
+    toggleDeleteList: boolean
 }
 
 export default class List extends Component<Props, State> {
@@ -18,21 +22,36 @@ export default class List extends Component<Props, State> {
         super(props);
         this.state = {
             isLoading: true,
-            list: new ListModel(),
-            listNameInputOpen: false
+            list: this.props.list,
+            listNameInputOpen: false,
+            toggleDeleteList: false
         };
         this.toggleNameInputList = this.toggleNameInputList.bind(this);
+        this.toggleNameDeleteList = this.toggleNameDeleteList.bind(this);
         this.nameChangedLists = this.nameChangedLists.bind(this);
         this.updateListName = this.updateListName.bind(this);
+        this.updateListToDelete = this.updateListToDelete.bind(this);
         this.listName = this.listName.bind(this);
         this.fetchList();
     }
 
     fetchList() {
-        axios.get(`/api/lists/${this.props.list.id}`)
+        axios.get(`/api/lists/${this.props.list.id}`,{
+                headers: {
+                    'Authorization': 'token' + localStorage.getItem('user_token')
+                }
+            })
             .then((resp) => {
                 this.setState({list: resp.data, isLoading: false});
             });
+    }
+
+    cardAdded(newCard: CardModel) {
+        let list = this.state.list;
+        if (list.cards)
+            list.cards.push(newCard);
+        this.setState({list: list});
+        this.updateList(this.state.list);
     }
 
     view() {
@@ -47,15 +66,31 @@ export default class List extends Component<Props, State> {
         return <div className="card">
             <div className={"card-body"}>
                 <h4>{this.state.list.name}</h4>
-                <button type="button" className="btn btn-primary btn-sm"> Add Card</button>
+                {this.toolbar()}
                 {this.listName()}
-                <button type="button" className="btn btn-primary btn-sm"> Delete Card</button>
+                {this.listDelete()}
+                {this.renderCards()}
             </div>
         </div>
     }
 
+    renderCards() {
+        const items: any[] = [];
+        if (this.state.list.cards) {
+            this.state.list.cards.forEach(card => {
+                    items.push(<Card key={card.id} card={card}/>);
+                }
+            )
+        }
+        return (
+            <div>
+                {items}
+            </div>
+        )
+    }
+
     render() {
-        return <div className={'col-3'}>
+        return <div className={'col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3'}>
             {this.view()}
         </div>;
     }
@@ -64,10 +99,18 @@ export default class List extends Component<Props, State> {
         this.setState({listNameInputOpen: !this.state.listNameInputOpen})
     }
 
+    toggleNameDeleteList() {
+        this.setState({toggleDeleteList: !this.state.toggleDeleteList})
+    }
 
     updateListName() {
         this.updateList(this.state.list);
         this.toggleNameInputList();
+    }
+
+    updateListToDelete() {
+        this.deleteList(this.state.list);
+        this.toggleNameDeleteList();
     }
 
     nameChangedLists(e: any) {
@@ -82,31 +125,65 @@ export default class List extends Component<Props, State> {
                 <input className="form-control" defaultValue={this.state.list.name || ''}
                        onChange={this.nameChangedLists}/>,
                 <button type="button" className="btn btn-primary btn-sm" onClick={this.updateListName}>
-                    Save
+                    <i className="fas fa-check"/>
                 </button>,
                 <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameInputList}>
-                    Cancel
+                    <i className="far fa-times-circle"/>
                 </button>
             ]
         } else {
-            return [
-                <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
-                    Edit Name
-                </button>
-            ]
+            return null;
         }
     }
 
-    // updateList(listy: ListModel[]) {
+    toolbar() {
+        return <div className="btn-group btn-group-sm" role="group">
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
+                <i className="far fa-edit"/>
+            </button>
+            <button type="button" className="btn btn-primary btn-sm">
+                <i className="fas fa-plus"/>
+            </button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
+                <i className="fas fa-trash-alt"/>
+            </button>
+        </div>
+    }
+
+    listDelete() {
+        if (this.state.toggleDeleteList) {
+            return [
+                <div>delete {this.state.list.name} ?</div>
+                ,
+                <div>
+                    <button type="button" className="btn btn-success btn-sm" onClick={this.updateListToDelete}>
+                        <i className="fas fa-check"/>
+                    </button>
+                    <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameDeleteList}>
+                        <i className="far fa-times-circle"/>
+                    </button>
+                </div>
+            ]
+        } else {
+            return null;
+        }
+    }
+
     updateList(list: ListModel) {
-        //Paweł
-        //1. odwołujesz się do ${this.props.match.params} czyli do parametru w linku, którym jest id tabeli nie listy
-        //2. w metodzie do obsługi aktualizacji pojedyńczej listy wysyłasz tablicę list, musisz wysłać tylko tabelkę, którą aktualizujesz
-        //3. jak robisz takie funkcie to pod F12 w zakladce siec masz zapytania i patrz czy dobre dane i adresy sa
-        // this.setState({listy: listy});
-        // axios.put(`/api/lists/${this.props.match.params}`, listy)
-        //     .then((resp) => {
-        //         this.setState({listy: resp.data});
-        //     });
+        this.setState({list: list});
+        axios.put(`/api/lists/${this.state.list.id}`, list)
+            .then((resp) => {
+                this.setState({list: resp.data});
+                this.props.afterModify();
+            });
+    };
+
+    deleteList(list: ListModel) {
+        this.setState({list: list});
+        axios.delete(`/api/lists/${this.state.list.id}`)
+            .then((resp) => {
+                this.setState({list: resp.data});
+                this.props.afterModify();
+            });
     };
 }

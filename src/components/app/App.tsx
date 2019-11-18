@@ -1,28 +1,42 @@
 import React from 'react';
 import './App.css';
+import Navbar from "../navbar/Navbar"
 import Tables from "../tables/Tables";
-import {Route, Switch} from 'react-router'
+import Login from "../user/Login"
+import Logout from "../user/Logout"
+import {Route, Switch,Redirect} from 'react-router'
 import Table from "../tables/Table";
-import {Link} from "react-router-dom";
 
 const App: React.FC = () => {
     return (
         <div className="App">
             <div className="header">
-                <Link to={{
-                    pathname: `/`
-                }}>
-                    <h2 className="h2-responsive"><strong>Trolo</strong></h2>
-                </Link>
+                <Navbar/>
             </div>
             <div className="content">
                 <Switch>
-                    <Route exact path="/" component={Tables}/>
+                    {redirectToLogin()}
+                    <Route path="/tables" component={Tables}/>
                     <Route path="/tables/:id" component={Table}/>
+                    <Route path="/login" component={Login}/>
+                    <Route path="/logout" component={Logout}/>
+                    {/*<Route path="/settings" component={}/>*/}
+                    {/*<Route path="/profile" component={}/>*/}
                 </Switch>
             </div>
         </div>
     );
 };
+
+function redirectToLogin() {
+    const isLogged = localStorage.getItem('user_token')!=null;
+    if(isLogged){
+        return <Route exact path="/" component={Tables}/>
+    }else{
+        return [<Route exact path="/" component={Login}/>,<Redirect to="/" />]
+
+    }
+}
+
 
 export default App;
