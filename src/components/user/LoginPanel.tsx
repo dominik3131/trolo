@@ -12,7 +12,7 @@ class Login extends Component {
         username:"",
         password:"",
         redirect:false
-    }
+    };
 
     constructor(props: Readonly<{}>) {
         super(props);
@@ -48,7 +48,7 @@ class Login extends Component {
     }
 
     validateForm() {
-        return this.state.username.length > 0 && this.state.password.length > 0;
+        return this.state.username.length > 0 && this.state.password.length > 7;
     }
 
     setLogin = (event: { target: { value: any; }; }) => {
@@ -57,18 +57,9 @@ class Login extends Component {
     setPassword = (event: { target: { value: any; }; }) => {
         this.setState({password: event.target.value});
     };
-
-    renderRedirect = () => {
-        if (this.state.redirect) {
-          return <Redirect to='/' />
-        }
-      }
-
     render() {
-        const { redirect } = this.state;
-
-        if (redirect) {
-            return <Redirect to='/'/>;
+        if (this.state.redirect) {
+            return <Redirect to='/tables/'/>;
         }
 
         return (
@@ -108,7 +99,6 @@ class Login extends Component {
                 </MDBRow>
             </MDBContainer>
         )
-
     }
 }
 

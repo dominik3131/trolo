@@ -2,7 +2,6 @@ import React, {Component}  from "react";
 import {MDBContainer, MDBBtn, MDBCol, MDBRow} from 'mdbreact';
 import UserModel from "../../data-models/UserModel";
 import axios from 'axios';
-import { Redirect } from "react-router";
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.withCredentials = true;
@@ -12,7 +11,7 @@ class Register extends Component {
         username:"",
         password:"",
         rep_pass:"",
-    }
+    };
 
     constructor(props: Readonly<{}>) {
         super(props);
@@ -23,7 +22,7 @@ class Register extends Component {
         let user = new UserModel();
         user.username = this.state.username;
         user.password = this.state.password;
-        axios.post(`/api/users/create/`, {...user},{headers: {
+        axios.post(`/api/users/create`, {...user},{headers: {
             'Content-Type': 'application/json'
         }})
             .then(() => {

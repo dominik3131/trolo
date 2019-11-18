@@ -4,25 +4,39 @@ import Navbar from "../navbar/Navbar"
 import Tables from "../tables/Tables";
 import Login from "../user/Login"
 import Logout from "../user/Logout"
-import {Route, Switch} from 'react-router'
+import {Route, Switch,Redirect} from 'react-router'
 import Table from "../tables/Table";
 
 const App: React.FC = () => {
     return (
         <div className="App">
             <div className="header">
-                <Navbar></Navbar>
+                <Navbar/>
             </div>
             <div className="content">
                 <Switch>
-                    <Route exact path="/" component={Tables}/>
+                    {redirectToLogin()}
+                    <Route path="/tables" component={Tables}/>
                     <Route path="/tables/:id" component={Table}/>
                     <Route path="/login" component={Login}/>
                     <Route path="/logout" component={Logout}/>
+                    {/*<Route path="/settings" component={}/>*/}
+                    {/*<Route path="/profile" component={}/>*/}
                 </Switch>
             </div>
         </div>
     );
 };
+
+function redirectToLogin() {
+    const isLogged = localStorage.getItem('user_token')!=null;
+    if(isLogged){
+        return <Route exact path="/" component={Tables}/>
+    }else{
+        return [<Route exact path="/" component={Login}/>,<Redirect to="/" />]
+
+    }
+}
+
 
 export default App;
