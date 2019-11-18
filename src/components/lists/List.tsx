@@ -36,7 +36,11 @@ export default class List extends Component<Props, State> {
     }
 
     fetchList() {
-        axios.get(`/api/lists/${this.props.list.id}`)
+        axios.get(`/api/lists/${this.props.list.id}`,{
+                headers: {
+                    'Authorization': 'token' + localStorage.getItem('user_token')
+                }
+            })
             .then((resp) => {
                 this.setState({list: resp.data, isLoading: false});
             });

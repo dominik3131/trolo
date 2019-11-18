@@ -49,7 +49,8 @@ export default class CreateTable extends Component {
         console.log(table);
         axios.post(`api/tables/`, {...table}, {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'token' + localStorage.getItem('user_token')
             }
         })
             .then(() => {

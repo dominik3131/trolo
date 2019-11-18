@@ -34,7 +34,11 @@ export default class CreateList extends Component<Props, State> {
         list.name = this.state.listName;
         list.id_table = this.props.tableId;
         this.toggleListNameInput();
-        axios.post('/api/lists/', list).then(
+        axios.post('/api/lists/', list,{
+            headers: {
+                'Authorization': 'token' + localStorage.getItem('user_token')
+            }
+        }).then(
             (resp)=>{this.props.afterAdd(resp.data)}
         );
     }

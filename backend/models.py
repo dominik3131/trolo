@@ -1,19 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.core.validators import RegexValidator
-
-class User(models.Model):
-    login = models.CharField(max_length=32)
-    password = models.CharField(max_length=32)
-    last_active = models.DateTimeField(auto_now_add=True)
-
-    #def __str__(self):
-        #return self.name
-        #pass
-
-    def get_absolute_url(self):
-        return reverse("user_detail", kwargs={"pk": self.pk})
-
+from django.contrib.auth.models import User
 
 class Team(models.Model):
     name = models.CharField(max_length=100)

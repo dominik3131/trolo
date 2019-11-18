@@ -30,3 +30,11 @@
 .divstyle{
     clear: both;
 }
+
+.right {
+  float: right;
+}
+
+.left {
+  text-align: left;
+}
