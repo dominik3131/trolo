@@ -49,7 +49,8 @@ export default class CreateList extends Component<Props, State> {
 
     view() {
         if (this.state.cardNameInputOpened) {
-           return <div className={'form-inline'}>
+           return <div className="row">
+           <div className={'form-inline'}>
                <input className="form-control" defaultValue={this.state.cardName}
                       onChange={this.nameChanged}/>,
                <button type="button" className="btn btn-success btn-sm" onClick={this.createCard}>
@@ -58,6 +59,7 @@ export default class CreateList extends Component<Props, State> {
                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleCardNameInput}>
                    <i className="far fa-times-circle"/>
                </button>
+            </div>
             </div>
         } else {
             return <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleCardNameInput}>
