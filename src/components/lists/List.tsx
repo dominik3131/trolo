@@ -4,6 +4,7 @@ import Card from "../cards/Card";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import CardModel from "../../data-models/CardModel";
+import CreateCard from "../cards/CreateCard";
 
 interface Props {
     list: ListModel
@@ -14,7 +15,8 @@ interface State {
     isLoading: boolean
     list: ListModel;
     listNameInputOpen: boolean,
-    toggleDeleteList: boolean
+    toggleDeleteList: boolean,
+    toggleCardCreator:boolean
 }
 
 export default class List extends Component<Props, State> {
@@ -24,10 +26,12 @@ export default class List extends Component<Props, State> {
             isLoading: true,
             list: this.props.list,
             listNameInputOpen: false,
-            toggleDeleteList: false
+            toggleDeleteList: false,
+            toggleCardCreator: false
         };
         this.toggleNameInputList = this.toggleNameInputList.bind(this);
         this.toggleNameDeleteList = this.toggleNameDeleteList.bind(this);
+        this.toggleCardCreator = this.toggleCardCreator.bind(this);
         this.nameChangedLists = this.nameChangedLists.bind(this);
         this.updateListName = this.updateListName.bind(this);
         this.updateListToDelete = this.updateListToDelete.bind(this);
@@ -69,6 +73,7 @@ export default class List extends Component<Props, State> {
                 {this.toolbar()}
                 {this.listName()}
                 {this.listDelete()}
+                {this.cardCreator()}
                 {this.renderCards()}
             </div>
         </div>
@@ -103,6 +108,10 @@ export default class List extends Component<Props, State> {
         this.setState({toggleDeleteList: !this.state.toggleDeleteList})
     }
 
+    toggleCardCreator(){
+        this.setState({toggleCardCreator: !this.state.toggleCardCreator})
+    }
+
     updateListName() {
         this.updateList(this.state.list);
         this.toggleNameInputList();
@@ -118,6 +127,9 @@ export default class List extends Component<Props, State> {
         list.name = e.target.value;
         this.setState({list: list})
     }
+
+
+
 
     listName() {
         if (this.state.listNameInputOpen) {
@@ -136,12 +148,24 @@ export default class List extends Component<Props, State> {
         }
     }
 
+    cardCreator() {
+        if(this.state.toggleCardCreator)
+        {
+            let cardCreator;
+            if (this.state.list.id) {
+                cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} toggleCreator={this.toggleCardCreator.bind(this)} listId={this.state.list.id}/>
+            }
+            return cardCreator;
+        }
+    }
+
+
     toolbar() {
         return <div className="btn-group btn-group-sm" role="group">
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
                 <i className="far fa-edit"/>
             </button>
-            <button type="button" className="btn btn-primary btn-sm">
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleCardCreator}>
                 <i className="fas fa-plus"/>
             </button>
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
