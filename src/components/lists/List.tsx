@@ -66,6 +66,7 @@ export default class List extends Component<Props, State> {
                 {this.toolbar()}
                 {this.listName()}
                 {this.listDelete()}
+                {this.cardCreator()}
                 {this.renderCards()}
             </div>
         </div>
@@ -136,16 +137,21 @@ export default class List extends Component<Props, State> {
         }
     }
 
-    toolbar() {
+    cardCreator() {
         let cardCreator;
         if (this.state.list.id) {
             cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} listId={this.state.list.id}/>
         }
+        return cardCreator;
+    }
+
+
+    toolbar() {
+        
         return <div className="btn-group btn-group-sm" role="group">
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
                 <i className="far fa-edit"/>
             </button>
-            {cardCreator}
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
                 <i className="fas fa-trash-alt"/>
             </button>
