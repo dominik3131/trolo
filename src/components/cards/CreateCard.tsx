@@ -9,11 +9,11 @@ axios.defaults.withCredentials = true;
 interface Props {
     listId: number
     afterAdd: any
+    toggleCreator: any
 }
 
 interface State {
     cardName: string
-    cardNameInputOpened: boolean
 }
 
 export default class CreateList extends Component<Props, State> {
@@ -22,7 +22,6 @@ export default class CreateList extends Component<Props, State> {
         super(props);
         this.state = {
             cardName: '',
-            cardNameInputOpened: false
         };
         this.toggleCardNameInput = this.toggleCardNameInput.bind(this);
         this.nameChanged = this.nameChanged.bind(this);
@@ -35,40 +34,32 @@ export default class CreateList extends Component<Props, State> {
         card.id_list = this.props.listId;
         this.toggleCardNameInput();
         axios.post('/api/cards/', card).then(
-            (resp)=>{this.props.afterAdd(resp.data)}
+            (resp) => {
+                this.props.afterAdd(resp.data)
+            }
         );
     }
 
     toggleCardNameInput() {
-        this.setState({cardNameInputOpened: !this.state.cardNameInputOpened})
+        this.props.toggleCreator();
     }
 
     nameChanged(e: any) {
         this.setState({cardName: e.target.value});
     }
 
-    view() {
-        if (this.state.cardNameInputOpened) {
-           return <div className="row">
-           <div className={'form-inline'}>
-               <input className="form-control" defaultValue={this.state.cardName}
-                      onChange={this.nameChanged}/>,
-               <button type="button" className="btn btn-success btn-sm" onClick={this.createCard}>
-                   <i className="fas fa-check"/>
-               </button>,
-               <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleCardNameInput}>
-                   <i className="far fa-times-circle"/>
-               </button>
-            </div>
-            </div>
-        } else {
-            return <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleCardNameInput}>
-                <i className="fas fa-plus"/>
-            </button>
-        }
-    }
-
     render() {
-        return this.view();
+        return <div className="row">
+            <div className={'form-inline'}>
+                <input className="form-control" defaultValue={this.state.cardName}
+                       onChange={this.nameChanged}/>,
+                <button type="button" className="btn btn-success btn-sm" onClick={this.createCard}>
+                    <i className="fas fa-check"/>
+                </button>
+                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleCardNameInput}>
+                    <i className="far fa-times-circle"/>
+                </button>
+            </div>
+        </div>
     }
 }

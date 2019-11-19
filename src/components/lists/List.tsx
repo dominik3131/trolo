@@ -15,7 +15,8 @@ interface State {
     isLoading: boolean
     list: ListModel;
     listNameInputOpen: boolean,
-    toggleDeleteList: boolean
+    toggleDeleteList: boolean,
+    toggleCardCreator:boolean
 }
 
 export default class List extends Component<Props, State> {
@@ -25,10 +26,12 @@ export default class List extends Component<Props, State> {
             isLoading: true,
             list: this.props.list,
             listNameInputOpen: false,
-            toggleDeleteList: false
+            toggleDeleteList: false,
+            toggleCardCreator: false
         };
         this.toggleNameInputList = this.toggleNameInputList.bind(this);
         this.toggleNameDeleteList = this.toggleNameDeleteList.bind(this);
+        this.toggleCardCreator = this.toggleCardCreator.bind(this);
         this.nameChangedLists = this.nameChangedLists.bind(this);
         this.updateListName = this.updateListName.bind(this);
         this.updateListToDelete = this.updateListToDelete.bind(this);
@@ -101,6 +104,10 @@ export default class List extends Component<Props, State> {
         this.setState({toggleDeleteList: !this.state.toggleDeleteList})
     }
 
+    toggleCardCreator(){
+        this.setState({toggleCardCreator: !this.state.toggleCardCreator})
+    }
+
     updateListName() {
         this.updateList(this.state.list);
         this.toggleNameInputList();
@@ -140,17 +147,19 @@ export default class List extends Component<Props, State> {
     cardCreator() {
         let cardCreator;
         if (this.state.list.id) {
-            cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} listId={this.state.list.id}/>
+            cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} toggleCreator={this.toggleCardCreator.bind(this)} listId={this.state.list.id}/>
         }
         return cardCreator;
     }
 
 
     toolbar() {
-        
         return <div className="btn-group btn-group-sm" role="group">
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
                 <i className="far fa-edit"/>
+            </button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleCardCreator}>
+                <i className="fas fa-plus"/>
             </button>
             <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
                 <i className="fas fa-trash-alt"/>
