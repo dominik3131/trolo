@@ -68,7 +68,7 @@ export default class List extends Component<Props, State> {
         if (this.state.cardNameInputOpen) {
             return [
                 <input className="form-control" defaultValue={this.state.card.name || ''}
-                       onChange={this.nameChangedCards}/>,
+                       onChange={this.nameChangedCards}/>,,
                 <button type="button" className="btn btn-primary btn-sm" onClick={this.updateCardName}>
                     <i className="fas fa-check"/>
                 </button>,

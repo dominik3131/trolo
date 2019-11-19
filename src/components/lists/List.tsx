@@ -145,11 +145,14 @@ export default class List extends Component<Props, State> {
     }
 
     cardCreator() {
-        let cardCreator;
-        if (this.state.list.id) {
-            cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} toggleCreator={this.toggleCardCreator.bind(this)} listId={this.state.list.id}/>
+        if(this.state.toggleCardCreator)
+        {
+            let cardCreator;
+            if (this.state.list.id) {
+                cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} toggleCreator={this.toggleCardCreator.bind(this)} listId={this.state.list.id}/>
+            }
+            return cardCreator;
         }
-        return cardCreator;
     }
 
 

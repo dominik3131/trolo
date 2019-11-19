@@ -52,7 +52,7 @@ export default class CreateList extends Component<Props, State> {
         return <div className="row">
             <div className={'form-inline'}>
                 <input className="form-control" defaultValue={this.state.cardName}
-                       onChange={this.nameChanged}/>,
+                       onChange={this.nameChanged}/>
                 <button type="button" className="btn btn-success btn-sm" onClick={this.createCard}>
                     <i className="fas fa-check"/>
                 </button>
