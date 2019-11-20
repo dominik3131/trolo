@@ -57,6 +57,9 @@ export default class List extends Component<Props, State> {
         this.setState({list: list});
         this.updateList(this.state.list);
     }
+    cardDeleted(){
+        this.updateList(this.state.list);
+    }
 
     view() {
         if (this.state.isLoading) {
@@ -83,7 +86,7 @@ export default class List extends Component<Props, State> {
         const items: any[] = [];
         if (this.state.list.cards) {
             this.state.list.cards.forEach(card => {
-                    items.push(<Card key={card.id} card={card}/>);
+                    items.push(<Card afterModify={this.cardDeleted.bind(this)} key={card.id} card={card}/>);
                 }
             )
         }
@@ -127,9 +130,6 @@ export default class List extends Component<Props, State> {
         list.name = e.target.value;
         this.setState({list: list})
     }
-
-
-
 
     listName() {
         if (this.state.listNameInputOpen) {
@@ -199,6 +199,7 @@ export default class List extends Component<Props, State> {
             .then((resp) => {
                 this.setState({list: resp.data});
                 this.props.afterModify();
+                this.fetchList(); //TODO Delete when backend PUT returns full list
             });
     };
 

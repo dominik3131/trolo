@@ -49,17 +49,16 @@ export default class CreateList extends Component<Props, State> {
     }
 
     render() {
-        return <div className="row">
-            <div className={'form-inline'}>
-                <input className="form-control" defaultValue={this.state.cardName}
-                       onChange={this.nameChanged}/>
+        return [
+            <input className="form-control" defaultValue={this.state.cardName}
+                   onChange={this.nameChanged}/>,
+            <div>
                 <button type="button" className="btn btn-success btn-sm" onClick={this.createCard}>
                     <i className="fas fa-check"/>
                 </button>
                 <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleCardNameInput}>
                     <i className="far fa-times-circle"/>
                 </button>
-            </div>
-        </div>
+            </div>]
     }
 }

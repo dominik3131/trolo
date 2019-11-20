@@ -114,8 +114,8 @@ export default class Table extends Component<Props, State> {
 
         } else {
             return [
-                <h4 className="h2-responsive stroke">{this.state.table.name}</h4>,
-                <button type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
+                <h4 key={'header'} className="h2-responsive stroke">{this.state.table.name}</h4>,
+                <button key={'button'} type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
                     <i className="far fa-edit"/>
                 </button>
             ]
@@ -136,7 +136,7 @@ export default class Table extends Component<Props, State> {
             listCreator = <CreateList afterAdd={this.listAdded.bind(this)} tableId={this.state.table.id}/>
         }
         return <div style={divStyle} className={'singleTable'}>
-            <div className={'container'}>
+            <div className={'container-fluid'}>
                 <div className={'form-inline'}>
                     {this.tableName()}
                     <button type="button" className="btn btn-danger bmd-btn-fab btn-sm" onClick={this.toggleFavorite}>
@@ -144,7 +144,6 @@ export default class Table extends Component<Props, State> {
                     </button>
                     {listCreator}
                 </div>
-
                 {this.renderLists()}
             </div>
         </div>
