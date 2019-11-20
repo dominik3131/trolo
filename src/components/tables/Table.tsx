@@ -114,8 +114,8 @@ export default class Table extends Component<Props, State> {
 
         } else {
             return [
-                <h4 className="h2-responsive stroke">{this.state.table.name}</h4>,
-                <button type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
+                <h4 key={'header'} className="h2-responsive stroke">{this.state.table.name}</h4>,
+                <button key={'button'} type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
                     <i className="far fa-edit"/>
                 </button>
             ]
@@ -144,7 +144,6 @@ export default class Table extends Component<Props, State> {
                     </button>
                     {listCreator}
                 </div>
-
                 {this.renderLists()}
             </div>
         </div>
