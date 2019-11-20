@@ -16,7 +16,7 @@ const App: React.FC = () => {
             <div className="content">
                 <Switch>
                     {redirectToLogin()}
-                    <Route path="/tables" component={Tables}/>
+                    <Route exact path="/tables" component={Tables}/>
                     <Route path="/tables/:id" component={Table}/>
                     <Route path="/login" component={Login}/>
                     <Route path="/logout" component={Logout}/>

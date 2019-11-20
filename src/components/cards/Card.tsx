@@ -5,6 +5,7 @@ import SmallSpinner from "../../utils/SmallSpinner";
 
 interface Props {
     card: CardModel
+    afterModify: any
 }
 
 interface State {
@@ -68,7 +69,7 @@ export default class List extends Component<Props, State> {
         if (this.state.cardNameInputOpen) {
             return [
                 <input className="form-control" defaultValue={this.state.card.name || ''}
-                       onChange={this.nameChangedCards}/>,,
+                       onChange={this.nameChangedCards}/>,
                 <button type="button" className="btn btn-primary btn-sm" onClick={this.updateCardName}>
                     <i className="fas fa-check"/>
                 </button>,
@@ -120,7 +121,7 @@ export default class List extends Component<Props, State> {
                 </div>
             </div>
         }
-        
+
         return <div className="card">
             <div className={"card-body"}>
                 {this.state.card.name}
@@ -142,14 +143,14 @@ export default class List extends Component<Props, State> {
         axios.put(`/api/cards/${this.state.card.id}`, card)
             .then((resp) => {
                 this.setState({card: resp.data});
-           });
+            });
     };
 
     deleteCard(card: CardModel) {
         this.setState({card: card});
         axios.delete(`/api/cards/${this.state.card.id}`)
-            .then((resp) => {
-                this.setState({card: resp.data});
+            .then(() => {
+                this.props.afterModify();
             });
     };
 
