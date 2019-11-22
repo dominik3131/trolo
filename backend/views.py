@@ -56,16 +56,13 @@ class ListaList(generics.ListCreateAPIView):
     serializer_class = ListaSimpleSerializer
 
 
-class ListaDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
+class ListaDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/lists/:list_id
     Method: GET/PUT/PATCH
     '''
     queryset = Lista.objects.all()
-    method_serializer_classes = {
-        ('GET', ): ListaDetailsSerializer,
-        ('PUT', 'PATCH'): ListaSimpleSerializer
-    }
+    serializer_class = ListaDetailsSerializer
 
 
 class CardList(generics.ListCreateAPIView):
