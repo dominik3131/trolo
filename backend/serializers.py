@@ -55,7 +55,7 @@ class ListaSimpleSerializer(CustomSerializer):
         fields = '__all__'
 
 class ListaDetailsSerializer(CustomSerializer):
-    cards = CardSimpleSerializer(many=True)
+    cards = CardSimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Lista
@@ -64,9 +64,11 @@ class ListaDetailsSerializer(CustomSerializer):
 
 
 class TablesSimpleSerializer(CustomSerializer):
+    
     class Meta:
         model = Table
         fields = '__all__'
+        read_only_fields = ['id_owner']
 
 
 class TableDetailsSerializer(CustomSerializer):

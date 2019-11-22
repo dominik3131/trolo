@@ -6,7 +6,8 @@ class CanGetTable(permissions.BasePermission):
         #if request.method in permissions.SAFE_METHODS:
         #    return True
         # Instance must have an attribute named `owner`.
-        return (request.user in obj.id_team.users.all()) 
+        #  return (request.user in obj.id_team.users.all()) 
+        return request.user == obj.id_owner or request.user.is_superuser
 
 class CanGetList(permissions.BasePermission):
 
@@ -14,7 +15,8 @@ class CanGetList(permissions.BasePermission):
         #if request.method in permissions.SAFE_METHODS:
         #    return True
         # Instance must have an attribute named `owner`.
-        return (request.user in obj.id_table.id_team.users.all()) 
+        #  return (request.user in obj.id_table.id_team.users.all()) 
+         return request.user == obj.id_table.id_owner or request.user.is_superuser
 
 class CanGetCard(permissions.BasePermission):
 
@@ -22,4 +24,5 @@ class CanGetCard(permissions.BasePermission):
         #if request.method in permissions.SAFE_METHODS:
         #    return True
         # Instance must have an attribute named `owner`.
-        return (request.user in obj.id_list.id_table.id_team.users.all()) 
+        #  return (request.user in obj.id_list.id_table.id_team.users.all())
+        return request.user == obj.id_list.id_table.id_owner or request.user.is_superuser

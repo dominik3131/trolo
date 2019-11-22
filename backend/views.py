@@ -43,7 +43,11 @@ class TableList(generics.ListCreateAPIView):
     serializer_class = TablesSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Table.objects.filter(id_team__users__in= [user])
+        return Table.objects.filter(id_owner = user)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(id_owner=user)
 
 
 @permission_classes([CanGetTable])
@@ -64,7 +68,7 @@ class ListaList(generics.ListCreateAPIView):
     serializer_class = ListaSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Lista.objects.filter(id_table__id_team__users__in= [user])
+        return Lista.objects.filter(id_table__id_owner= user)
 
 
 class ListaDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -85,7 +89,7 @@ class CardList(generics.ListCreateAPIView):
     serializer_class = CardSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Card.objects.filter(id_list__id_table__id_team__users__in= [user])
+        return Card.objects.filter(id_list__id_table__id_owner= user)
 
 class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
