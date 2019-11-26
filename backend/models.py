@@ -41,6 +41,7 @@ class Table(models.Model):
 class Lista(models.Model):
     name = models.CharField(max_length=100)
     id_table = models.ForeignKey(Table, related_name='listy', on_delete=models.CASCADE)
+    is_archive =  models.BooleanField(default=False)
     lookup_field = "name"
     
     def __str__(self):
@@ -85,7 +86,7 @@ class Label(models.Model):
 
 class Attachment(models.Model):
     file_name = models.CharField(max_length=50)
-    attached_file = models.BinaryField()
+    attached_file = models.FileField(upload_to ='attachments/%Y/%m/%D/')
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='attachment_card_id')
 
     def __str__(self):

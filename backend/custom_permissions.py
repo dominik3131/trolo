@@ -26,3 +26,8 @@ class CanGetCard(permissions.BasePermission):
         # Instance must have an attribute named `owner`.
         #  return (request.user in obj.id_list.id_table.id_team.users.all())
         return request.user == obj.id_list.id_table.id_owner or request.user.is_superuser
+
+class CanGetAttachment(permissions.BasePermission):
+
+        def has_object_permission(self, request, view, obj):
+            return (request.user == obj.card_id.id_list.id_table.id_owner or request.user.is_superuser ) and obj.card_id == request.card_id

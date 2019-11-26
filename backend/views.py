@@ -54,7 +54,7 @@ class TableList(generics.ListCreateAPIView):
 class TableDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/tables/:table_id
-    Method: GET/PUT/PATCH
+    Method: GET/PUT/PATCH/DELETE
     '''
     queryset = Table.objects.all()
     serializer_class = TableDetailsSerializer
@@ -74,7 +74,7 @@ class ListaList(generics.ListCreateAPIView):
 class ListaDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/lists/:list_id
-    Method: GET/PUT/PATCH
+    Method: GET/PUT/PATCH/DELETE
     '''
     queryset = Lista.objects.all()
     serializer_class = ListaDetailsSerializer
@@ -94,7 +94,7 @@ class CardList(generics.ListCreateAPIView):
 class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/cards/:card_id
-    Method: GET/PUT/PATCH
+    Method: GET/PUT/PATCH/DELETE
     '''
     queryset = Card.objects.all()
     method_serializer_classes = {
@@ -116,3 +116,35 @@ class CustomLoginView(LoginView):
         mydata = {"message": "some message", "status": "success"}
         orginal_response.data.update(mydata)
         return orginal_response
+
+class AttachmentList(generics.CreateAPIView):
+    '''
+    API: /api/attachments/
+    Method: POST
+    Description: Add attachment to card.
+    '''
+    queryset = Card.objects.all()
+    serializer_class = AttachmentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Card.objects.filter(id_list__id_table__id_owner= user)
+
+class AttachmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/attachments/:attachment_id
+    Method: GET/PUT/PATCH/DELETE
+    Description: Get, update or delete attachment by its id.
+    '''
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSimpleSerializer
+
+class CardsAttachmentList(generics.ListAPIView):
+    '''
+    API: /api/cards/attachments/:card_id
+    Method: GET
+    Description: Get all attachments of a card by its id.
+    '''
+    serializer_class = AttachmentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Attachment.objects.filter(card_id__id_list__id_table__id_owner= user).filter(card_id=self.kwargs['pk'])

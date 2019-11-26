@@ -17,8 +17,6 @@ class CustomSerializer(serializers.ModelSerializer):
             return expanded_fields
 
 
-
-
 class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(write_only=True)
@@ -38,15 +36,26 @@ class UserSerializer(serializers.ModelSerializer):
         # Tuple of serialized model fields (see link [2])
         fields = ( "id", "username", "password", )
 
+
+
+class AttachmentSimpleSerializer(CustomSerializer):
+    
+    class Meta:
+        model = Attachment
+        fields = '__all__'
+
 class CardSimpleSerializer(CustomSerializer):
     class Meta:
         model = Card
         fields = '__all__'
 
 class CardDetailsSerializer(CustomSerializer):
+    attachments = AttachmentSimpleSerializer(many=True, read_only=True)
+
     class Meta:
         model = Card
         fields = '__all__'
+        extra_fields = ['attachments']
 
 
 class ListaSimpleSerializer(CustomSerializer):
@@ -69,7 +78,6 @@ class TablesSimpleSerializer(CustomSerializer):
         model = Table
         fields = '__all__'
         read_only_fields = ['id_owner']
-
 
 class TableDetailsSerializer(CustomSerializer):
     listy = ListaDetailsSerializer(many=True, read_only=True)
