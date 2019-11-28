@@ -8,7 +8,7 @@ import CreateCard from "../cards/CreateCard";
 import {
     MDBBtn,
     MDBCard,
-    MDBCardBody,
+    MDBCardBody, MDBCol,
     MDBDropdown, MDBDropdownItem,
     MDBDropdownMenu,
     MDBDropdownToggle,
@@ -153,7 +153,7 @@ export default class List extends Component<Props, State> {
                 Actions
             </MDBDropdownToggle>
             <MDBDropdownMenu basic>
-                <MDBDropdownItem header>List Actions <MDBIcon icon="times"/></MDBDropdownItem>
+                <MDBDropdownItem header>List Actions</MDBDropdownItem>
                 <MDBDropdownItem onClick={this.toggleNameInputList}>Edit name</MDBDropdownItem>
                 <MDBDropdownItem onClick={this.toggleCardCreator}>Add card</MDBDropdownItem>
                 {/*<MDBDropdownItem>Copy list</MDBDropdownItem>*/}
@@ -197,15 +197,13 @@ export default class List extends Component<Props, State> {
                     }
                 )
         }
-        return (
-            <div>{items}</div>
-        )
+        return items
     }
 
     render() {
-        return <div className={'col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3'}>
+        return <MDBCol xl={"3"} lg={"4"} md={"6"} sm={"6"} size={"12"}>
             {this.view()}
-        </div>;
+        </MDBCol>;
     }
 
 }

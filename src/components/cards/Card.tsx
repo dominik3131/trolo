@@ -13,6 +13,7 @@ import {
     MDBModalHeader,
     MDBRow
 } from "mdbreact";
+import Attachments from "../Attachments/Attachments";
 
 interface Props {
     card: CardModel
@@ -27,6 +28,8 @@ interface State {
     cardNameInputOpen: boolean
     toggleCreate: boolean
     newCardName: string
+    newAttachment: any
+    newAttachmentAdded: boolean
 }
 
 export default class Card extends Component<Props, State> {
@@ -39,7 +42,9 @@ export default class Card extends Component<Props, State> {
             cardCopy: this.props.card,
             cardNameInputOpen: false,
             toggleCreate: false,
-            newCardName: ''
+            newCardName: '',
+            newAttachment: null,
+            newAttachmentAdded: false
         };
         this.bindMethods();
         this.fetchCard();
@@ -54,6 +59,7 @@ export default class Card extends Component<Props, State> {
         this.toggleModal = this.toggleModal.bind(this);
         this.saveAndUpdateCard = this.saveAndUpdateCard.bind(this);
         this.cancelEdit = this.cancelEdit.bind(this);
+        this.attachFileToCard = this.attachFileToCard.bind(this);
 
     }
 
@@ -127,6 +133,50 @@ export default class Card extends Component<Props, State> {
         this.toggleModal();
     }
 
+    attachFileToCard(file: File) {
+        const data = new FormData();
+        let id = this.state.card.id as number;
+        let stringId = id.toString();
+        data.append('attached_file', file);
+        data.append('card_id', stringId);
+        data.append('file_name', file.name);
+        axios.post(`/api/attachments/`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(() => {
+                this.props.afterModify();
+                this.setState({newAttachmentAdded: true});
+                this.fetchCard();
+            });
+    }
+
+    handleFileChange(selectorFiles: FileList | null) {
+        if (selectorFiles) {
+            let file = selectorFiles.item(0);
+            if (file) {
+                this.attachFileToCard(file);
+            }
+        }
+    }
+
+    attachmentInput() {
+        return <div className="custom-file">
+            <input
+                type="file"
+                className="custom-file-input"
+                id="inputGroupFile01"
+                onChange={(e) => this.handleFileChange(e.target.files)}
+                aria-describedby="inputGroupFileAddon01"
+            />
+            <label className="custom-file-label" htmlFor="inputGroupFile01">
+                Attach file
+            </label>
+        </div>
+
+    }
+
     cardName() {
         if (this.state.cardNameInputOpen) {
             return <MDBFormInline>
@@ -178,9 +228,19 @@ export default class Card extends Component<Props, State> {
         </div>
     }
 
+    attachments() {
+        if (this.state.newAttachmentAdded) {
+            //workaround for passing new attachment event to Attachments
+            this.setState({newAttachmentAdded: false})
+        } else {
+            return <Attachments cardId={this.state.card.id as number}
+                                afterModify={this.props.afterModify}/>
+        }
+    }
+
     modal() {
         return <MDBContainer>
-            <MDBModal size="lg" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
+            <MDBModal size="fluid" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
                 <MDBModalHeader toggle={this.toggleModal}>
                     {this.cardName()}
                 </MDBModalHeader>
@@ -189,13 +249,14 @@ export default class Card extends Component<Props, State> {
                         <MDBRow>
                             <MDBCol size="9">
                                 {this.cardDescription()}
+                                {this.attachments()}
                             </MDBCol>
                             <MDBCol>
                                 {this.cardDeleteArchive()}
+                                {this.attachmentInput()}
                             </MDBCol>
                         </MDBRow>
                     </MDBContainer>
-
                 </MDBModalBody>
                 <MDBModalFooter>
                     <MDBBtn id={'saveButton'} size={'sm'} onClick={this.saveAndUpdateCard}

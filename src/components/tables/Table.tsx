@@ -6,6 +6,7 @@ import Spinner from "../../utils/Spinner";
 import List from "../lists/List";
 import CreateList from "../lists/CreateList";
 import ListModel from "../../data-models/ListModel";
+import {MDBBtn, MDBContainer, MDBFormInline, MDBIcon} from "mdbreact";
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -67,9 +68,9 @@ export default class Table extends Component<Props, State> {
 
     favouriteButtonStar() {
         if (this.state.table.favourite) {
-            return <i className="fas fa-star"/>
+            return <MDBIcon icon={'fas fa-star'}/>
         }
-        return <i className="far fa-star"/>
+        return <MDBIcon icon={'far fa-star'}/>
     }
 
     toggleNameInput() {
@@ -104,20 +105,20 @@ export default class Table extends Component<Props, State> {
             return [
                 <input className="form-control" defaultValue={this.state.table.name || ''}
                        onChange={this.nameChanged}/>,
-                <button type="button" className="btn btn-success btn-sm" onClick={this.updateName}>
-                    <i className="fas fa-check"/>
-                </button>,
-                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameInput}>
-                    <i className="far fa-times-circle"/>
-                </button>
+                <MDBBtn color={'success'} size={'sm'} onClick={this.updateName}>
+                    <MDBIcon icon={'fas fa-check'}/>
+                </MDBBtn>,
+                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleNameInput}>
+                    <MDBIcon icon={'far fa-times-circle'}/>
+                </MDBBtn>
             ]
 
         } else {
             return [
                 <h4 key={'header'} className="h2-responsive stroke">{this.state.table.name}</h4>,
-                <button key={'button'} type="button" className="btn btn-success btn-sm" onClick={this.toggleNameInput}>
-                    <i className="far fa-edit"/>
-                </button>
+                <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleNameInput}>
+                    <MDBIcon icon={'far fa-edit'}/>
+                </MDBBtn>
             ]
         }
     }
@@ -136,16 +137,16 @@ export default class Table extends Component<Props, State> {
             listCreator = <CreateList afterAdd={this.listAdded.bind(this)} tableId={this.state.table.id}/>
         }
         return <div style={divStyle} className={'singleTable'}>
-            <div className={'container-fluid'}>
-                <div className={'form-inline'}>
+            <MDBContainer fluid>
+                <MDBFormInline>
                     {this.tableName()}
-                    <button type="button" className="btn btn-danger bmd-btn-fab btn-sm" onClick={this.toggleFavorite}>
+                    <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleFavorite}>
                         {this.favouriteButtonStar()}
-                    </button>
+                    </MDBBtn>
                     {listCreator}
-                </div>
+                </MDBFormInline>
                 {this.renderLists()}
-            </div>
+            </MDBContainer>
         </div>
 
     }
