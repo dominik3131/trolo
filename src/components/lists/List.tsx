@@ -5,6 +5,15 @@ import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import CardModel from "../../data-models/CardModel";
 import CreateCard from "../cards/CreateCard";
+import {
+    MDBBtn,
+    MDBCard,
+    MDBCardBody,
+    MDBDropdown, MDBDropdownItem,
+    MDBDropdownMenu,
+    MDBDropdownToggle,
+    MDBIcon
+} from "mdbreact";
 
 interface Props {
     list: ListModel
@@ -15,8 +24,8 @@ interface State {
     isLoading: boolean
     list: ListModel;
     listNameInputOpen: boolean,
-    toggleDeleteList: boolean,
-    toggleCardCreator:boolean
+    toggleCardCreator: boolean,
+    newName: string
 }
 
 export default class List extends Component<Props, State> {
@@ -26,29 +35,38 @@ export default class List extends Component<Props, State> {
             isLoading: true,
             list: this.props.list,
             listNameInputOpen: false,
-            toggleDeleteList: false,
-            toggleCardCreator: false
+            toggleCardCreator: false,
+            newName: ''
         };
         this.toggleNameInputList = this.toggleNameInputList.bind(this);
-        this.toggleNameDeleteList = this.toggleNameDeleteList.bind(this);
         this.toggleCardCreator = this.toggleCardCreator.bind(this);
         this.nameChangedLists = this.nameChangedLists.bind(this);
         this.updateListName = this.updateListName.bind(this);
-        this.updateListToDelete = this.updateListToDelete.bind(this);
         this.listName = this.listName.bind(this);
+        this.archiveList = this.archiveList.bind(this);
+        this.archiveAllCards = this.archiveAllCards.bind(this);
         this.fetchList();
     }
 
     fetchList() {
-        axios.get(`/api/lists/${this.props.list.id}`,{
-                headers: {
-                    'Authorization': 'token' + localStorage.getItem('user_token')
-                }
-            })
+        axios.get(`/api/lists/${this.props.list.id}`, {
+            headers: {
+                'Authorization': 'token' + localStorage.getItem('user_token')
+            }
+        })
             .then((resp) => {
                 this.setState({list: resp.data, isLoading: false});
             });
     }
+
+    updateList(list: ListModel) {
+        this.setState({list: list});
+        axios.put(`/api/lists/${this.state.list.id}`, list)
+            .then((resp) => {
+                this.setState({list: resp.data});
+                this.props.afterModify();
+            });
+    };
 
     cardAdded(newCard: CardModel) {
         let list = this.state.list;
@@ -57,43 +75,130 @@ export default class List extends Component<Props, State> {
         this.setState({list: list});
         this.updateList(this.state.list);
     }
-    cardDeleted(){
+
+    cardDeleted() {
         this.updateList(this.state.list);
+    }
+
+
+    toggleNameInputList() {
+        this.setState({listNameInputOpen: !this.state.listNameInputOpen});
+        let name = this.state.list.name as string;
+        this.setState({newName: name});
+    }
+
+    toggleCardCreator() {
+        this.setState({toggleCardCreator: !this.state.toggleCardCreator})
+    }
+
+    updateListName() {
+        let list = this.state.list;
+        list.name = this.state.newName;
+        this.updateList(this.state.list);
+        this.toggleNameInputList();
+    }
+
+    archiveList() {
+        let list = this.state.list;
+        list.is_archive = true;
+        this.updateList(list);
+    }
+
+    nameChangedLists(e: any) {
+        this.setState({newName: e.target.value})
+    }
+
+    archiveAllCards() {
+        let list = this.state.list;
+        if (list.cards) {
+            list.cards.forEach(card => {
+                card.is_archive = true;
+                axios.put(`/api/cards/${card.id}`, card)
+                    .then();
+            });
+            this.updateList(list);
+        }
+    }
+
+    listName() {
+        if (this.state.listNameInputOpen) {
+            return [
+                <input className="form-control" defaultValue={this.state.list.name || ''}
+                       onChange={this.nameChangedLists}/>,
+                <MDBBtn color={'primary'} size={'sm'} onClick={this.updateListName}>
+                    <MDBIcon icon={'fas fa-check'}/>
+                </MDBBtn>,
+                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleNameInputList}>
+                    <MDBIcon icon={'far fa-times-circle'}/>
+                </MDBBtn>
+            ]
+        } else {
+            return <h4>{this.state.list.name}</h4>;
+        }
+    }
+
+    cardCreator() {
+        if (this.state.toggleCardCreator) {
+            if (this.state.list.id) {
+                return <CreateCard afterAdd={this.cardAdded.bind(this)}
+                                   toggleCreator={this.toggleCardCreator.bind(this)}
+                                   listId={this.state.list.id}/>
+            }
+        }
+    }
+
+    dropdown() {
+        return <MDBDropdown dropright>
+            <MDBDropdownToggle caret color="primary">
+                Actions
+            </MDBDropdownToggle>
+            <MDBDropdownMenu basic>
+                <MDBDropdownItem header>List Actions <MDBIcon icon="times"/></MDBDropdownItem>
+                <MDBDropdownItem onClick={this.toggleNameInputList}>Edit name</MDBDropdownItem>
+                <MDBDropdownItem onClick={this.toggleCardCreator}>Add card</MDBDropdownItem>
+                {/*<MDBDropdownItem>Copy list</MDBDropdownItem>*/}
+                {/*<MDBDropdownItem>Move list</MDBDropdownItem>*/}
+                {/*<MDBDropdownItem>Watch</MDBDropdownItem>*/}
+                <MDBDropdownItem divider/>
+                {/*<MDBDropdownItem>Move all cards in this list</MDBDropdownItem>*/}
+                <MDBDropdownItem onClick={this.archiveAllCards}>Archive all cards in this list</MDBDropdownItem>
+                <MDBDropdownItem divider/>
+                <MDBDropdownItem onClick={this.archiveList}>Archive this list</MDBDropdownItem>
+            </MDBDropdownMenu>
+        </MDBDropdown>
     }
 
     view() {
         if (this.state.isLoading) {
-            return <div className="card">
-                <div className={"card-body"}>
+            return <MDBCard>
+                <MDBCardBody className={"card-body"}>
                     {this.props.list.name}
                     <SmallSpinner/>
-                </div>
-            </div>
+                </MDBCardBody>
+            </MDBCard>
         }
-        return <div className="card">
-            <div className={"card-body"}>
-                <h4>{this.state.list.name}</h4>
-                {this.toolbar()}
+        return <MDBCard>
+            <MDBCardBody>
                 {this.listName()}
-                {this.listDelete()}
+                {this.dropdown()}
                 {this.cardCreator()}
                 {this.renderCards()}
-            </div>
-        </div>
+            </MDBCardBody>
+        </MDBCard>
     }
 
     renderCards() {
         const items: any[] = [];
         if (this.state.list.cards) {
-            this.state.list.cards.forEach(card => {
-                    items.push(<Card afterModify={this.cardDeleted.bind(this)} key={card.id} card={card}/>);
-                }
-            )
+            this.state.list.cards
+                .filter(card => !card.is_archive)
+                .forEach(card => {
+                        items.push(<Card afterModify={this.cardDeleted.bind(this)} key={card.id} card={card}/>);
+                    }
+                )
         }
         return (
-            <div>
-                {items}
-            </div>
+            <div>{items}</div>
         )
     }
 
@@ -103,112 +208,4 @@ export default class List extends Component<Props, State> {
         </div>;
     }
 
-    toggleNameInputList() {
-        this.setState({listNameInputOpen: !this.state.listNameInputOpen})
-    }
-
-    toggleNameDeleteList() {
-        this.setState({toggleDeleteList: !this.state.toggleDeleteList})
-    }
-
-    toggleCardCreator(){
-        this.setState({toggleCardCreator: !this.state.toggleCardCreator})
-    }
-
-    updateListName() {
-        this.updateList(this.state.list);
-        this.toggleNameInputList();
-    }
-
-    updateListToDelete() {
-        this.deleteList(this.state.list);
-        this.toggleNameDeleteList();
-    }
-
-    nameChangedLists(e: any) {
-        let list = this.state.list;
-        list.name = e.target.value;
-        this.setState({list: list})
-    }
-
-    listName() {
-        if (this.state.listNameInputOpen) {
-            return [
-                <input className="form-control" defaultValue={this.state.list.name || ''}
-                       onChange={this.nameChangedLists}/>,
-                <button type="button" className="btn btn-primary btn-sm" onClick={this.updateListName}>
-                    <i className="fas fa-check"/>
-                </button>,
-                <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameInputList}>
-                    <i className="far fa-times-circle"/>
-                </button>
-            ]
-        } else {
-            return null;
-        }
-    }
-
-    cardCreator() {
-        if(this.state.toggleCardCreator)
-        {
-            let cardCreator;
-            if (this.state.list.id) {
-                cardCreator = <CreateCard afterAdd={this.cardAdded.bind(this)} toggleCreator={this.toggleCardCreator.bind(this)} listId={this.state.list.id}/>
-            }
-            return cardCreator;
-        }
-    }
-
-
-    toolbar() {
-        return <div className="btn-group btn-group-sm" role="group">
-            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameInputList}>
-                <i className="far fa-edit"/>
-            </button>
-            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleCardCreator}>
-                <i className="fas fa-plus"/>
-            </button>
-            <button type="button" className="btn btn-primary btn-sm" onClick={this.toggleNameDeleteList}>
-                <i className="fas fa-trash-alt"/>
-            </button>
-        </div>
-    }
-
-    listDelete() {
-        if (this.state.toggleDeleteList) {
-            return [
-                <div>delete {this.state.list.name} ?</div>
-                ,
-                <div>
-                    <button type="button" className="btn btn-success btn-sm" onClick={this.updateListToDelete}>
-                        <i className="fas fa-check"/>
-                    </button>
-                    <button type="button" className="btn btn-danger btn-sm" onClick={this.toggleNameDeleteList}>
-                        <i className="far fa-times-circle"/>
-                    </button>
-                </div>
-            ]
-        } else {
-            return null;
-        }
-    }
-
-    updateList(list: ListModel) {
-        this.setState({list: list});
-        axios.put(`/api/lists/${this.state.list.id}`, list)
-            .then((resp) => {
-                this.setState({list: resp.data});
-                this.props.afterModify();
-                this.fetchList(); //TODO Delete when backend PUT returns full list
-            });
-    };
-
-    deleteList(list: ListModel) {
-        this.setState({list: list});
-        axios.delete(`/api/lists/${this.state.list.id}`)
-            .then((resp) => {
-                this.setState({list: resp.data});
-                this.props.afterModify();
-            });
-    };
 }

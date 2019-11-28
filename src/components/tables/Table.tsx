@@ -153,10 +153,12 @@ export default class Table extends Component<Props, State> {
     renderLists() {
         const items: any[] = [];
         if (this.state.table.listy) {
-            this.state.table.listy.forEach(list => {
-                    items.push(<List key={list.id} afterModify={this.listModified.bind(this)} list={list}/>);
-                }
-            )
+            this.state.table.listy
+                .filter(list => !list.is_archive)
+                .forEach(list => {
+                        items.push(<List key={list.id} afterModify={this.listModified.bind(this)} list={list}/>);
+                    }
+                )
         }
         return (
             <div className={'row'}>

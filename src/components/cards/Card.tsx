@@ -26,11 +26,10 @@ interface State {
     cardCopy: CardModel
     cardNameInputOpen: boolean
     toggleCreate: boolean
-    toggleDeleteCard: boolean
     newCardName: string
 }
 
-export default class List extends Component<Props, State> {
+export default class Card extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -40,24 +39,24 @@ export default class List extends Component<Props, State> {
             cardCopy: this.props.card,
             cardNameInputOpen: false,
             toggleCreate: false,
-            toggleDeleteCard: false,
             newCardName: ''
         };
         this.bindMethods();
         this.fetchCard();
     }
 
-    bindMethods(){
+    bindMethods() {
+        this.deleteCard = this.deleteCard.bind(this);
+        this.toggleArchive = this.toggleArchive.bind(this);
         this.toggleNameInput = this.toggleNameInput.bind(this);
-        this.toggleNameDeleteCard = this.toggleNameDeleteCard.bind(this);
         this.nameChanged = this.nameChanged.bind(this);
         this.updateCardName = this.updateCardName.bind(this);
-        this.updateCardsToDelete = this.updateCardsToDelete.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.saveAndUpdateCard = this.saveAndUpdateCard.bind(this);
         this.cancelEdit = this.cancelEdit.bind(this);
 
     }
+
     fetchCard() {
         axios.get(`/api/cards/${this.props.card.id}`)
             .then((resp) => {
@@ -65,12 +64,30 @@ export default class List extends Component<Props, State> {
             });
     }
 
+    updateCard(card: CardModel) {
+        this.setState({card: card});
+        axios.put(`/api/cards/${this.state.card.id}`, card)
+            .then((resp) => {
+                this.setState({card: resp.data});
+                this.props.afterModify();
+            });
+    };
+
+    deleteCard() {
+        axios.delete(`/api/cards/${this.state.card.id}`)
+            .then(() => {
+                this.props.afterModify();
+            });
+    };
+
     toggleNameInput() {
         this.setState({cardNameInputOpen: !this.state.cardNameInputOpen})
     }
 
-    toggleNameDeleteCard() {
-        this.setState({toggleDeleteCard: !this.state.toggleDeleteCard})
+    toggleArchive() {
+        let card = this.state.card;
+        card.is_archive = !card.is_archive;
+        this.setState({card: card});
     }
 
     toggleModal() {
@@ -87,27 +104,7 @@ export default class List extends Component<Props, State> {
         this.setState({card: card});
         this.toggleNameInput();
     }
-    updateCardsToDelete() {
-        this.deleteCard(this.state.card);
-        this.toggleNameDeleteCard();
-    }
 
-    updateCard(card: CardModel) {
-        this.setState({card: card});
-        axios.put(`/api/cards/${this.state.card.id}`, card)
-            .then((resp) => {
-                this.setState({card: resp.data});
-                this.props.afterModify();
-            });
-    };
-
-    deleteCard(card: CardModel) {
-        this.setState({card: card});
-        axios.delete(`/api/cards/${this.state.card.id}`)
-            .then(() => {
-                this.props.afterModify();
-            });
-    };
 
     nameChanged(e: any) {
         let name = e.target.value;
@@ -137,7 +134,7 @@ export default class List extends Component<Props, State> {
                 <input className="form-control" defaultValue={this.state.card.name || ''}
                        onChange={this.nameChanged}/>
                 <MDBBtn color={'primary'} size={'sm'} onClick={this.updateCardName}>
-                    <MDBIcon  icon={'fas fa-check'}/>
+                    <MDBIcon icon={'fas fa-check'}/>
                 </MDBBtn>
                 <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleNameInput}>
                     <MDBIcon icon={'far fa-times-circle'}/>
@@ -151,10 +148,22 @@ export default class List extends Component<Props, State> {
         }
     }
 
-    cardDelete() {
-        return <MDBBtn color="danger" onClick={this.updateCardsToDelete}>
-            <MDBIcon far icon="trash-alt"/> Delete
-        </MDBBtn>
+    cardDeleteArchive() {
+        if (this.state.card.is_archive) {
+            return [
+                <MDBBtn color="primary" size={'sm'} onClick={this.toggleArchive}>
+                    <MDBIcon far icon="trash-alt"/> Return card to table
+                </MDBBtn>
+                ,
+                <MDBBtn color="danger" size={'sm'} onClick={this.deleteCard}>
+                    <MDBIcon far icon="trash-alt"/> Delete
+                </MDBBtn>]
+        } else {
+            return <MDBBtn color="primary" size={'sm'} onClick={this.toggleArchive}>
+                <MDBIcon far icon="trash-alt"/> Archive
+            </MDBBtn>
+        }
+
     }
 
     cardDescription() {
@@ -168,9 +177,9 @@ export default class List extends Component<Props, State> {
             />
         </div>
     }
+
     modal() {
         return <MDBContainer>
-            <MDBBtn size="sm" onClick={this.toggleModal}><MDBIcon icon="edit"/></MDBBtn>
             <MDBModal size="lg" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
                 <MDBModalHeader toggle={this.toggleModal}>
                     {this.cardName()}
@@ -182,16 +191,16 @@ export default class List extends Component<Props, State> {
                                 {this.cardDescription()}
                             </MDBCol>
                             <MDBCol>
-                                {this.cardDelete()}
+                                {this.cardDeleteArchive()}
                             </MDBCol>
                         </MDBRow>
                     </MDBContainer>
 
                 </MDBModalBody>
                 <MDBModalFooter>
-                    <MDBBtn id={'saveButton'} onClick={this.saveAndUpdateCard}
+                    <MDBBtn id={'saveButton'} size={'sm'} onClick={this.saveAndUpdateCard}
                             color="primary">Save</MDBBtn>
-                    <MDBBtn id={'cancelButton'} onClick={this.cancelEdit}
+                    <MDBBtn id={'cancelButton'} size={'sm'} onClick={this.cancelEdit}
                             color="danger">Cancel</MDBBtn>
                 </MDBModalFooter>
             </MDBModal>
@@ -209,7 +218,7 @@ export default class List extends Component<Props, State> {
         }
         return <MDBCard>
             <MDBCardBody>
-                {this.state.card.name}
+                <span onClick={this.toggleModal}>{this.state.card.name}</span>
                 {this.modal()}
             </MDBCardBody>
         </MDBCard>
