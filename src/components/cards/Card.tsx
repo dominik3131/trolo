@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import CardModel from "../../data-models/CardModel";
+import Comment from "../comments/Comment";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import {
@@ -85,6 +86,10 @@ export default class Card extends Component<Props, State> {
                 this.props.afterModify();
             });
     };
+
+    commentDeleted() {
+        this.updateCard(this.state.card);
+    }
 
     toggleNameInput() {
         this.setState({cardNameInputOpen: !this.state.cardNameInputOpen})
@@ -216,16 +221,6 @@ export default class Card extends Component<Props, State> {
 
     }
 
-    commentsList() {
-        return <div>
-        <MDBInput
-            type="textarea"
-            label="Description"
-            rows="2"
-        />
-    </div>
-    }
-
     cardDescription() {
         return <div>
             <MDBInput
@@ -262,7 +257,7 @@ export default class Card extends Component<Props, State> {
                                 {this.attachments()}
                             </MDBCol>
                             <MDBCol size="9">
-                                {this.commentsList()}
+                                {this.renderComments()}
                             </MDBCol>
                             <MDBCol>
                                 {this.cardDeleteArchive()}
@@ -300,14 +295,15 @@ export default class Card extends Component<Props, State> {
 
     renderComments() {
         const items: any[] = [];
-         (this.state.card.comments) {
+        if (this.state.card.comments) {
             this.state.card.comments
-                .forEach(comments => {
+                //.filter(card => !card.is_archive)
+                .forEach(comment => {
                         items.push(<Comment afterModify={this.commentDeleted.bind(this)} key={comment.id} comment={comment}/>);
-        }
+                    }
                 )
         }
-       return items
+        return items
     }
 
     render() {

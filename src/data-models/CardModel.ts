@@ -1,4 +1,5 @@
 import CommentModel from "./CommentModel";
+
 export default class CardModel {
     id: number | undefined;
     name: string | undefined;
