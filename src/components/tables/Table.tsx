@@ -24,6 +24,7 @@ interface State {
     toogleOpenCloseTable: boolean
     newTableName: string
     newBackground: string
+    newDescription: string
     isLoading: boolean,
 }
 
@@ -39,6 +40,7 @@ export default class Table extends Component<Props, State> {
             toogleOpenCloseTable: false,
             newTableName: '',
             newBackground: '',
+            newDescription: '',
             isLoading: true,
         };
 
@@ -46,9 +48,10 @@ export default class Table extends Component<Props, State> {
         this.nameChanged = this.nameChanged.bind(this);
         this.updateName = this.updateName.bind(this);
         this.updateBackground = this.updateBackground.bind(this);
+        this.updateDescription = this.updateDescription.bind(this);
         this.toggleBackground = this.toggleBackground.bind(this);
         this.backgroundChanged = this.backgroundChanged.bind(this);
-
+        this.descriptionChanged = this.descriptionChanged.bind(this);
         this.toggleDescription = this.toggleDescription.bind(this);
         this.toggleCloseTable = this.toggleCloseTable.bind(this);
         this.fetchTable();
@@ -129,12 +132,24 @@ export default class Table extends Component<Props, State> {
         this.toggleBackground();
     }
 
+    updateDescription() {
+        let table = this.state.table;
+        console.log(this.state.newDescription)
+        table.description = this.state.newDescription;
+        this.updateTable(table);
+        this.toggleDescription();
+    }
+
     nameChanged(e: any) {
         this.setState({newTableName: e.target.value})
     }
 
     backgroundChanged(e: any) {
         this.setState({newBackground: e.target.value})
+    }
+
+    descriptionChanged(e: any) {
+        this.setState({newDescription: e.target.value})
     }
 
     tableClose() {
@@ -163,9 +178,9 @@ export default class Table extends Component<Props, State> {
     tableDescription() {
         if (this.state.toogleOpenDescription) {
             return [
-                <input className="form-control" defaultValue={''}
-                       onChange={this.backgroundChanged}/>,
-                <MDBBtn color={'success'} size={'sm'} >
+                <input className="form-control" defaultValue={this.state.table.description || ''}
+                       onChange={this.descriptionChanged}/>,
+                <MDBBtn color={'success'} size={'sm'} onClick={this.updateDescription}>
                     <MDBIcon icon={'fas fa-check'}/>
                 </MDBBtn>,
                 <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleDescription}>
