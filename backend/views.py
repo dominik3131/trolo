@@ -148,3 +148,36 @@ class CardsAttachmentList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Attachment.objects.filter(card_id__id_list__id_table__id_owner= user).filter(card_id=self.kwargs['pk'])
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/comments/:comment_id
+    Method: GET/PUT/PATCH/DELETE
+    Description: Get, update or delete comment by its id.
+    '''
+    queryset = Comment.objects.all()
+    serializer_class = CommentSimpleSerializer
+
+class CommentAdd(generics.CreateAPIView):
+    '''
+    API: /api/comments/
+    Method: POST
+    Description: Add comment to card.
+    '''
+    queryset = Comment.objects.all()
+    serializer_class = CommentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Comment.objects.filter(card_id__id_list__id_table__id_owner= user)
+
+
+class CardsCommentsList(generics.ListAPIView):
+    '''
+    API: /api/cards/comments/:card_id
+    Method: GET
+    Description: Get all comments of a card by its id.
+    '''
+    serializer_class = CommentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Comment.objects.filter(card_id__id_list__id_table__id_owner = user).filter(card_id=self.kwargs['pk'])
