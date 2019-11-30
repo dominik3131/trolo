@@ -88,7 +88,7 @@ class Label(models.Model):
 class Attachment(models.Model):
     file_name = models.CharField(max_length=50)
     attached_file = models.FileField(upload_to ='attachments/%Y/%m/%D/')
-    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='attachment_card_id')
+    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='attachments')
 
     def __str__(self):
         return self.file_name
@@ -99,4 +99,5 @@ class Attachment(models.Model):
 
 class Comment(models.Model):
     content = models.CharField(max_length=1000)
-    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='comment_card_id')
+    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='comments')
+
