@@ -70,7 +70,7 @@ class ListaSimpleSerializer(CustomSerializer):
         fields = '__all__'
 
 class ListaDetailsSerializer(CustomSerializer):
-    cards = CardSimpleSerializer(many=True, read_only=True)
+    cards = CardDetailsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Lista
