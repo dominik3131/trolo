@@ -19,7 +19,11 @@ interface Props {
 interface State {
     table: TableModel
     nameInputOpen: boolean
+    toggleOpenBackground: boolean
+    toogleOpenDescription: boolean
+    toogleOpenCloseTable: boolean
     newTableName: string
+    newBackground: string
     isLoading: boolean,
 }
 
@@ -30,13 +34,23 @@ export default class Table extends Component<Props, State> {
         this.state = {
             table: new TableModel(),
             nameInputOpen: false,
+            toggleOpenBackground: false,
+            toogleOpenDescription: false,
+            toogleOpenCloseTable: false,
             newTableName: '',
+            newBackground: '',
             isLoading: true,
         };
+
         this.toggleNameInput = this.toggleNameInput.bind(this);
         this.nameChanged = this.nameChanged.bind(this);
         this.updateName = this.updateName.bind(this);
+        this.updateBackground = this.updateBackground.bind(this);
+        this.toggleBackground = this.toggleBackground.bind(this);
+        this.backgroundChanged = this.backgroundChanged.bind(this);
 
+        this.toggleDescription = this.toggleDescription.bind(this);
+        this.toggleCloseTable = this.toggleCloseTable.bind(this);
         this.fetchTable();
     }
 
@@ -73,6 +87,18 @@ export default class Table extends Component<Props, State> {
         return <MDBIcon icon={'far fa-star'}/>
     }
 
+    toggleDescription() {
+        this.setState({toogleOpenDescription: !this.state.toogleOpenDescription})
+    }
+
+    toggleCloseTable() {
+        this.setState({toogleOpenCloseTable: !this.state.toogleOpenCloseTable})
+    }
+
+    toggleBackground() {
+        this.setState({toggleOpenBackground: !this.state.toggleOpenBackground})
+    }
+
     toggleNameInput() {
         this.setState({nameInputOpen: !this.state.nameInputOpen})
     }
@@ -96,9 +122,87 @@ export default class Table extends Component<Props, State> {
         this.toggleNameInput();
     }
 
+    updateBackground() {
+        let table = this.state.table;
+        table.background = this.state.newBackground;
+        this.updateTable(table);
+        this.toggleBackground();
+    }
+
     nameChanged(e: any) {
         this.setState({newTableName: e.target.value})
     }
+
+    backgroundChanged(e: any) {
+        this.setState({newBackground: e.target.value})
+    }
+
+    tableClose() {
+        if (this.state.toogleOpenCloseTable) {
+            console.log("witamy123")
+            return [
+                <MDBBtn color={'default'} size={'sm'} >
+                    Close this table?
+                </MDBBtn>,
+                <MDBBtn color={'success'} size={'sm'} >
+                    <MDBIcon icon={'fas fa-check'}/>
+                </MDBBtn>,
+                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleCloseTable}>
+                    <MDBIcon icon={'far fa-times-circle'}/>
+                </MDBBtn>
+            ]
+
+        } else {
+            return [
+                <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleCloseTable}>
+                    Close Table
+                </MDBBtn>
+            ]        }
+    }
+
+    tableDescription() {
+        if (this.state.toogleOpenDescription) {
+            return [
+                <input className="form-control" defaultValue={''}
+                       onChange={this.backgroundChanged}/>,
+                <MDBBtn color={'success'} size={'sm'} >
+                    <MDBIcon icon={'fas fa-check'}/>
+                </MDBBtn>,
+                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleDescription}>
+                    <MDBIcon icon={'far fa-times-circle'}/>
+                </MDBBtn>
+            ]
+
+        } else {
+            return [
+                <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleDescription}>
+                    Edit Table Description
+                </MDBBtn>
+            ]        }
+    }
+
+    tableBackground() {
+        if (this.state.toggleOpenBackground) {
+            return [
+                <input className="form-control" defaultValue={this.state.table.background || ''}
+                       onChange={this.backgroundChanged}/>,
+                <MDBBtn color={'success'} size={'sm'} onClick={this.updateBackground}>
+                    <MDBIcon icon={'fas fa-check'}/>
+                </MDBBtn>,
+                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleBackground}>
+                    <MDBIcon icon={'far fa-times-circle'}/>
+                </MDBBtn>
+            ]
+
+        } else {
+            return [
+                <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleBackground}>
+                    Edit table background
+                </MDBBtn>
+            ]        }
+    }
+
+
 
     tableName() {
         if (this.state.nameInputOpen) {
@@ -144,6 +248,9 @@ export default class Table extends Component<Props, State> {
                         {this.favouriteButtonStar()}
                     </MDBBtn>
                     {listCreator}
+                    {this.tableDescription()}
+                    {this.tableBackground()}
+                    {this.tableClose()}
                 </MDBFormInline>
                 {this.renderLists()}
             </MDBContainer>
