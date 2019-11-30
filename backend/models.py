@@ -21,8 +21,8 @@ class Table(models.Model):
         (1, 'Team'),
         (2, 'Public'),
     )
-    description = models.CharField(max_length=200,default=None, blank=True, null=True)
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=200,default=None, blank=True, null=True)
     visibility = models.IntegerField(default=0, choices=VISIBILITY)
     last_open = models.DateTimeField(blank=True, null=True)
     last_modyfied = models.DateTimeField(blank=True, null=True)
