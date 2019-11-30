@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import CardModel from "../../data-models/CardModel";
+import CommentModel from "../../data-models/CommentModel";
 import Comment from "../comments/Comment";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
+import CreateComment from "../comments/CreateComment";
 import {
     MDBBtn, MDBCard, MDBCardBody,
     MDBCol,
@@ -157,6 +159,14 @@ export default class Card extends Component<Props, State> {
             });
     }
 
+    commentAdded(newComment: CommentModel) {
+        let card = this.state.card;
+        if (card.comments)
+            card.comments.push(newComment);
+        this.setState({card: card});
+        this.updateCard(this.state.card);
+    }
+
     handleFileChange(selectorFiles: FileList | null) {
         if (selectorFiles) {
             let file = selectorFiles.item(0);
@@ -244,6 +254,10 @@ export default class Card extends Component<Props, State> {
     }
 
     modal() {
+        let commentCreator;
+        if (this.state.card.id) {
+            commentCreator = <CreateComment afterAdd={this.commentAdded.bind(this)} cardId={this.state.card.id}/>
+        }
         return <MDBContainer>
             <MDBModal size="fluid" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
                 <MDBModalHeader toggle={this.toggleModal}>
@@ -257,6 +271,7 @@ export default class Card extends Component<Props, State> {
                                 {this.attachments()}
                             </MDBCol>
                             <MDBCol size="9">
+                                {commentCreator}
                                 {this.renderComments()}
                             </MDBCol>
                             <MDBCol>
