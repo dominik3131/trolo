@@ -25,6 +25,7 @@ interface State {
     newTableName: string
     newBackground: string
     newDescription: string
+    is_closed: boolean
     isLoading: boolean,
 }
 
@@ -41,17 +42,21 @@ export default class Table extends Component<Props, State> {
             newTableName: '',
             newBackground: '',
             newDescription: '',
+            is_closed: false,
             isLoading: true,
         };
 
-        this.toggleNameInput = this.toggleNameInput.bind(this);
         this.nameChanged = this.nameChanged.bind(this);
+        this.backgroundChanged = this.backgroundChanged.bind(this);
+        this.descriptionChanged = this.descriptionChanged.bind(this);
+
         this.updateName = this.updateName.bind(this);
         this.updateBackground = this.updateBackground.bind(this);
         this.updateDescription = this.updateDescription.bind(this);
+        this.updateCloseTable = this.updateCloseTable.bind(this);
+
+        this.toggleNameInput = this.toggleNameInput.bind(this);
         this.toggleBackground = this.toggleBackground.bind(this);
-        this.backgroundChanged = this.backgroundChanged.bind(this);
-        this.descriptionChanged = this.descriptionChanged.bind(this);
         this.toggleDescription = this.toggleDescription.bind(this);
         this.toggleCloseTable = this.toggleCloseTable.bind(this);
         this.fetchTable();
@@ -134,10 +139,16 @@ export default class Table extends Component<Props, State> {
 
     updateDescription() {
         let table = this.state.table;
-        console.log(this.state.newDescription)
         table.description = this.state.newDescription;
         this.updateTable(table);
         this.toggleDescription();
+    }
+
+    updateCloseTable() {
+        let table = this.state.table;
+        table.is_closed = true;
+        this.updateTable(table);
+        this.toggleCloseTable();
     }
 
     nameChanged(e: any) {
@@ -154,12 +165,11 @@ export default class Table extends Component<Props, State> {
 
     tableClose() {
         if (this.state.toogleOpenCloseTable) {
-            console.log("witamy123")
             return [
                 <MDBBtn color={'default'} size={'sm'} >
                     Close this table?
                 </MDBBtn>,
-                <MDBBtn color={'success'} size={'sm'} >
+                <MDBBtn color={'success'} size={'sm'} onClick={this.updateCloseTable}>
                     <MDBIcon icon={'fas fa-check'}/>
                 </MDBBtn>,
                 <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleCloseTable}>
