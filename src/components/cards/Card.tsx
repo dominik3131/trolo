@@ -216,6 +216,16 @@ export default class Card extends Component<Props, State> {
 
     }
 
+    commentsList() {
+        return <div>
+        <MDBInput
+            type="textarea"
+            label="Description"
+            rows="2"
+        />
+    </div>
+    }
+
     cardDescription() {
         return <div>
             <MDBInput
@@ -251,6 +261,9 @@ export default class Card extends Component<Props, State> {
                                 {this.cardDescription()}
                                 {this.attachments()}
                             </MDBCol>
+                            <MDBCol size="9">
+                                {this.commentsList()}
+                            </MDBCol>
                             <MDBCol>
                                 {this.cardDeleteArchive()}
                                 {this.attachmentInput()}
@@ -283,6 +296,18 @@ export default class Card extends Component<Props, State> {
                 {this.modal()}
             </MDBCardBody>
         </MDBCard>
+    }
+
+    renderComments() {
+        const items: any[] = [];
+         (this.state.card.comments) {
+            this.state.card.comments
+                .forEach(comments => {
+                        items.push(<Comment afterModify={this.commentDeleted.bind(this)} key={comment.id} comment={comment}/>);
+        }
+                )
+        }
+       return items
     }
 
     render() {
