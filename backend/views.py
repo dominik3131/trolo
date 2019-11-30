@@ -43,7 +43,7 @@ class TableList(generics.ListCreateAPIView):
     serializer_class = TablesSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Table.objects.filter(id_owner = user)
+        return Table.objects.filter(id_owner = user).exclude(is_closed = True)
 
     def perform_create(self, serializer):
         user = self.request.user
