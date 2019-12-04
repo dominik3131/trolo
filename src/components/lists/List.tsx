@@ -12,8 +12,7 @@ import {
     MDBDropdown, MDBDropdownItem,
     MDBDropdownMenu,
     MDBDropdownToggle,
-    MDBIcon,
-    MDBRow
+    MDBIcon
 } from "mdbreact";
 
 interface Props {

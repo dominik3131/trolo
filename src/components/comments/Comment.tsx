@@ -3,17 +3,9 @@ import CommentModel from "../../data-models/CommentModel";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import {
-    MDBBtn, MDBCard, MDBCardBody,
-    MDBCol,
-    MDBContainer, MDBFormInline,
-    MDBIcon, MDBInput,
-    MDBModal,
-    MDBModalBody,
-    MDBModalFooter,
-    MDBModalHeader,
-    MDBRow
+    MDBBtn, MDBCard, MDBCardBody, MDBFormInline,
+    MDBIcon, MDBInput
 } from "mdbreact";
-import Attachments from "../Attachments/Attachments";
 
 interface Props {
     comment: CommentModel
@@ -23,8 +15,8 @@ interface Props {
 interface State {
     isLoading: boolean
     comment: CommentModel
-    toogleCommentContentOpen: boolean
-    toogleOpenDeleteComment: boolean
+    toggleCommentContentOpen: boolean
+    toggleOpenDeleteComment: boolean
     newComment: string
 }
 
@@ -34,15 +26,16 @@ export default class Comment extends Component<Props, State> {
         this.state = {
             isLoading: true,
             comment: this.props.comment,
-            toogleCommentContentOpen: false,
-            toogleOpenDeleteComment: false,
+            toggleCommentContentOpen: false,
+            toggleOpenDeleteComment: false,
             newComment: '',
         };
         this.bindMethods();
         this.fetchComment();
     }
+
     bindMethods() {
-        this.contentChangeComment = this.contentChangeComment.bind(this);
+        this.commentContentChanged = this.commentContentChanged.bind(this);
 
         this.toggleNameComment = this.toggleNameComment.bind(this);
         this.toggleDeleteComment = this.toggleDeleteComment.bind(this);
@@ -55,16 +48,18 @@ export default class Comment extends Component<Props, State> {
         let comment = this.state.comment;
         comment.content = this.state.newComment;
         this.updateComment(comment);
-        //this.setState({comment: comment});
         this.toggleNameComment();
     }
 
     toggleNameComment() {
-        this.setState({toogleCommentContentOpen: !this.state.toogleCommentContentOpen})
+        this.setState({
+            toggleCommentContentOpen: !this.state.toggleCommentContentOpen,
+            newComment: this.state.comment.content as string
+        })
     }
 
     toggleDeleteComment() {
-        this.setState({toogleOpenDeleteComment: !this.state.toogleOpenDeleteComment})
+        this.setState({toggleOpenDeleteComment: !this.state.toggleOpenDeleteComment})
     }
 
     fetchComment() {
@@ -95,24 +90,31 @@ export default class Comment extends Component<Props, State> {
         this.toggleDeleteComment();
     }
 
-    contentChangeComment(e: any) {
+    commentContentChanged(e: any) {
         this.setState({newComment: e.target.value})
     }
 
     commentDescription() {
-        if (this.state.toogleCommentContentOpen) {
+        if (this.state.toggleCommentContentOpen) {
             return [
-                <input className="form-control" defaultValue={this.state.comment.content || ''}
-                       onChange={this.contentChangeComment}/>,
-                <MDBBtn color={'primary'} size={'sm'} onClick={this.updateCommentName}>
+                <MDBInput
+                    type="textarea"
+                    rows="2"
+                    label="Write comment"
+                    value={this.state.newComment || ''}
+                    onChange={this.commentContentChanged}
+                    key={'input'}
+                />,
+                <MDBBtn key={'accept'} color={'primary'} size={'sm'} onClick={this.updateCommentName}>
                     <MDBIcon icon={'fas fa-check'}/>
                 </MDBBtn>,
-                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleNameComment}>
+                <MDBBtn key={'cancel'} color={'danger'} size={'sm'} onClick={this.toggleNameComment}>
                     <MDBIcon icon={'far fa-times-circle'}/>
                 </MDBBtn>
             ]
         } else {
             return [
+                this.commentContent(),
                 <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleNameComment}>
                     Edit
                 </MDBBtn>
@@ -121,56 +123,65 @@ export default class Comment extends Component<Props, State> {
     }
 
     commentDelete() {
-        if (this.state.toogleOpenDeleteComment) {
-            return [
-                <MDBBtn color={'default'} size={'sm'} >
+        if (this.state.toggleOpenDeleteComment) {
+            return <MDBFormInline>
+                <MDBBtn color={'default'} size={'sm'}>
                     Delete comment?
-                </MDBBtn>,
+                </MDBBtn>
                 <MDBBtn color={'success'} size={'sm'} onClick={this.updateDeleteComment}>
                     <MDBIcon icon={'fas fa-check'}/>
-                </MDBBtn>,
+                </MDBBtn>
                 <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleDeleteComment}>
                     <MDBIcon icon={'far fa-times-circle'}/>
                 </MDBBtn>
-            ]
+            </MDBFormInline>
 
         } else {
-            return [
-                <MDBBtn key={'button'} color={'danger'} size={'sm'} onClick={this.toggleDeleteComment}>
-                    Delete
-                </MDBBtn>
-            ]        }
+            return <MDBBtn key={'button'} color={'danger'} size={'sm'} onClick={this.toggleDeleteComment}>
+                Delete
+            </MDBBtn>
+
+        }
+    }
+
+    commentContent() {
+        let regex = /\[.*]\(.*\)/gm;
+        let content = this.state.comment.content;
+        if (content) {
+            let attachment = content.match(regex);
+            if (attachment) {
+                let name = attachment[0].substring(1, attachment[0].indexOf(']'));
+                let url = attachment[0].substring(attachment[0].indexOf('(') + 1, attachment[0].indexOf(')'));
+                content = content.replace(attachment[0], '');
+                return <div key={url}>
+                    {content}
+                    <br/>
+                    <a href={url}>
+                        {name}
+                    </a>
+                </div>;
+            }
+        }
+        return null;
     }
 
     view() {
         if (this.state.isLoading) {
-            return<MDBCard>
+            return <MDBCard>
                 <MDBCardBody>
                     <SmallSpinner/>
                 </MDBCardBody>
             </MDBCard>
         }
         return <MDBCard>
-            <MDBCardBody>
-                
-                <MDBRow>
-                <div className="text-left">
-                    {this.state.comment.content}
-                </div>
-                </MDBRow>
-                <MDBRow>
-                <div className="text-right">
-                    {this.commentDescription()}
-                    {this.commentDelete()}
-                </div>
-                </MDBRow>
+            <MDBCardBody className={"text-left"}>
+                {this.commentDescription()}
+                {this.commentDelete()}
             </MDBCardBody>
         </MDBCard>
     }
 
     render() {
-        return <div>
-            {this.view()}
-        </div>;
+        return this.view();
     }
 }

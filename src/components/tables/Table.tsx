@@ -6,7 +6,17 @@ import Spinner from "../../utils/Spinner";
 import List from "../lists/List";
 import CreateList from "../lists/CreateList";
 import ListModel from "../../data-models/ListModel";
-import {MDBBtn, MDBContainer, MDBFormInline, MDBIcon} from "mdbreact";
+import {
+    MDBBtn,
+    MDBContainer,
+    MDBFormInline,
+    MDBIcon,
+    MDBInput,
+    MDBPopover,
+    MDBPopoverBody,
+    MDBBtnGroup
+} from "mdbreact";
+import TableMenu from "./TableMenu";
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -20,8 +30,8 @@ interface State {
     table: TableModel
     nameInputOpen: boolean
     toggleOpenBackground: boolean
-    toogleOpenDescription: boolean
-    toogleOpenCloseTable: boolean
+    toggleOpenDescription: boolean
+    toggleOpenCloseTable: boolean
     newTableName: string
     newBackground: string
     newDescription: string
@@ -37,8 +47,8 @@ export default class Table extends Component<Props, State> {
             table: new TableModel(),
             nameInputOpen: false,
             toggleOpenBackground: false,
-            toogleOpenDescription: false,
-            toogleOpenCloseTable: false,
+            toggleOpenDescription: false,
+            toggleOpenCloseTable: false,
             newTableName: '',
             newBackground: '',
             newDescription: '',
@@ -90,17 +100,20 @@ export default class Table extends Component<Props, State> {
 
     favouriteButtonStar() {
         if (this.state.table.favourite) {
-            return <MDBIcon icon={'fas fa-star'}/>
+            return <MDBIcon icon="star"/>
         }
-        return <MDBIcon icon={'far fa-star'}/>
+        return <MDBIcon far icon="star"/>
     }
 
     toggleDescription() {
-        this.setState({toogleOpenDescription: !this.state.toogleOpenDescription})
+        this.setState({
+            toggleOpenDescription: !this.state.toggleOpenDescription,
+            newDescription: this.state.table.description as string
+        })
     }
 
     toggleCloseTable() {
-        this.setState({toogleOpenCloseTable: !this.state.toogleOpenCloseTable})
+        this.setState({toggleOpenCloseTable: !this.state.toggleOpenCloseTable})
     }
 
     toggleBackground() {
@@ -164,17 +177,17 @@ export default class Table extends Component<Props, State> {
     }
 
     tableClose() {
-        if (this.state.toogleOpenCloseTable) {
+        if (this.state.toggleOpenCloseTable) {
             return [
-                <MDBBtn color={'default'} size={'sm'} >
-                    Close this table?
-                </MDBBtn>,
-                <MDBBtn color={'success'} size={'sm'} onClick={this.updateCloseTable}>
-                    <MDBIcon icon={'fas fa-check'}/>
-                </MDBBtn>,
-                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleCloseTable}>
-                    <MDBIcon icon={'far fa-times-circle'}/>
-                </MDBBtn>
+                "Close this table?",
+                <MDBBtnGroup size="sm">
+                    <MDBBtn color={'success'} size={'sm'} onClick={this.updateCloseTable}>
+                        <MDBIcon icon={'fas fa-check'}/>
+                    </MDBBtn>
+                    <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleCloseTable}>
+                        <MDBIcon icon={'far fa-times-circle'}/>
+                    </MDBBtn>
+                </MDBBtnGroup>
             ]
 
         } else {
@@ -182,51 +195,74 @@ export default class Table extends Component<Props, State> {
                 <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleCloseTable}>
                     Close Table
                 </MDBBtn>
-            ]        }
+            ]
+        }
+    }
+
+    tableDescriptionPopover() {
+        return <MDBPopover placement="bottom" popover clickable id="popper3"
+        >
+            <MDBBtn key={'button'} color={'success'} size={'sm'}>
+                Table description
+            </MDBBtn>
+            <div>
+                <MDBPopoverBody>
+                    {this.tableDescription()}
+                </MDBPopoverBody>
+            </div>
+        </MDBPopover>
+
     }
 
     tableDescription() {
-        if (this.state.toogleOpenDescription) {
+        if (this.state.toggleOpenDescription) {
             return [
-                <input className="form-control" defaultValue={this.state.table.description || ''}
-                       onChange={this.descriptionChanged}/>,
-                <MDBBtn color={'success'} size={'sm'} onClick={this.updateDescription}>
-                    <MDBIcon icon={'fas fa-check'}/>
-                </MDBBtn>,
-                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleDescription}>
-                    <MDBIcon icon={'far fa-times-circle'}/>
-                </MDBBtn>
+                <MDBInput
+                    type="textarea"
+                    rows="2"
+                    label="Write description"
+                    value={this.state.newDescription}
+                    onChange={this.descriptionChanged}
+                    key={'input'}
+                />,
+                <MDBBtnGroup size="sm">
+                    <MDBBtn color={'success'} size={'sm'} onClick={this.updateDescription}>
+                        <MDBIcon icon={'fas fa-check'}/>
+                    </MDBBtn>
+                    <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleDescription}>
+                        <MDBIcon icon={'far fa-times-circle'}/>
+                    </MDBBtn>
+                </MDBBtnGroup>
             ]
 
         } else {
-            return [
-                <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleDescription}>
-                    Edit Table Description
-                </MDBBtn>
-            ]        }
+            return <span onClick={this.toggleDescription}>{this.state.table.description}</span>
+        }
     }
 
     tableBackground() {
         if (this.state.toggleOpenBackground) {
-            return [
+            return <div className={'form-inline'}>
                 <input className="form-control" defaultValue={this.state.table.background || ''}
                        onChange={this.backgroundChanged}/>,
-                <MDBBtn color={'success'} size={'sm'} onClick={this.updateBackground}>
-                    <MDBIcon icon={'fas fa-check'}/>
-                </MDBBtn>,
-                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleBackground}>
-                    <MDBIcon icon={'far fa-times-circle'}/>
-                </MDBBtn>
-            ]
+                <MDBBtnGroup size="sm">
+                    <MDBBtn color={'success'} size={'sm'} onClick={this.updateBackground}>
+                        <MDBIcon icon={'fas fa-check'}/>
+                    </MDBBtn>
+                    <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleBackground}>
+                        <MDBIcon icon={'far fa-times-circle'}/>
+                    </MDBBtn>
+                </MDBBtnGroup>
+            </div>
 
         } else {
             return [
                 <MDBBtn key={'button'} color={'success'} size={'sm'} onClick={this.toggleBackground}>
-                    Edit table background
+                    Table background
                 </MDBBtn>
-            ]        }
+            ]
+        }
     }
-
 
 
     tableName() {
@@ -234,12 +270,14 @@ export default class Table extends Component<Props, State> {
             return [
                 <input className="form-control" defaultValue={this.state.table.name || ''}
                        onChange={this.nameChanged}/>,
-                <MDBBtn color={'success'} size={'sm'} onClick={this.updateName}>
-                    <MDBIcon icon={'fas fa-check'}/>
-                </MDBBtn>,
-                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleNameInput}>
-                    <MDBIcon icon={'far fa-times-circle'}/>
-                </MDBBtn>
+                <MDBBtnGroup size="sm">
+                    <MDBBtn color={'success'} size={'sm'} onClick={this.updateName}>
+                        <MDBIcon icon={'fas fa-check'}/>
+                    </MDBBtn>
+                    <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleNameInput}>
+                        <MDBIcon icon={'far fa-times-circle'}/>
+                    </MDBBtn>
+                </MDBBtnGroup>
             ]
 
         } else {
@@ -273,9 +311,10 @@ export default class Table extends Component<Props, State> {
                         {this.favouriteButtonStar()}
                     </MDBBtn>
                     {listCreator}
-                    {this.tableDescription()}
+                    {this.tableDescriptionPopover()}
                     {this.tableBackground()}
                     {this.tableClose()}
+                    <TableMenu table={this.state.table} afterModify={this.listModified.bind(this)}/>
                 </MDBFormInline>
                 {this.renderLists()}
             </MDBContainer>
@@ -301,8 +340,6 @@ export default class Table extends Component<Props, State> {
     }
 
     render() {
-        return (
-            this.view()
-        );
+        return this.view();
     }
 }
