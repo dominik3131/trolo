@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import CardModel from "../../data-models/CardModel";
+import Comment from "../comments/Comment";
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import {
-    MDBBtn, MDBCard, MDBCardBody,
+    MDBBtn, MDBBtnGroup, MDBCard, MDBCardBody,
     MDBCol,
     MDBContainer, MDBFormInline,
     MDBIcon, MDBInput,
@@ -14,6 +15,8 @@ import {
     MDBRow
 } from "mdbreact";
 import Attachments from "../Attachments/Attachments";
+import CommentsList from "../comments/CommentsList";
+import AttachmentInput from "../Attachments/AttachmentInput";
 
 interface Props {
     card: CardModel
@@ -28,7 +31,6 @@ interface State {
     cardNameInputOpen: boolean
     toggleCreate: boolean
     newCardName: string
-    newAttachment: any
     newAttachmentAdded: boolean
 }
 
@@ -43,7 +45,6 @@ export default class Card extends Component<Props, State> {
             cardNameInputOpen: false,
             toggleCreate: false,
             newCardName: '',
-            newAttachment: null,
             newAttachmentAdded: false
         };
         this.bindMethods();
@@ -59,8 +60,8 @@ export default class Card extends Component<Props, State> {
         this.toggleModal = this.toggleModal.bind(this);
         this.saveAndUpdateCard = this.saveAndUpdateCard.bind(this);
         this.cancelEdit = this.cancelEdit.bind(this);
-        this.attachFileToCard = this.attachFileToCard.bind(this);
-
+        this.attachmentAdded = this.attachmentAdded.bind(this);
+        this.unarchiveCard = this.unarchiveCard.bind(this);
     }
 
     fetchCard() {
@@ -86,6 +87,10 @@ export default class Card extends Component<Props, State> {
             });
     };
 
+    commentDeleted() {
+        this.updateCard(this.state.card);
+    }
+
     toggleNameInput() {
         this.setState({cardNameInputOpen: !this.state.cardNameInputOpen})
     }
@@ -94,6 +99,12 @@ export default class Card extends Component<Props, State> {
         let card = this.state.card;
         card.is_archive = !card.is_archive;
         this.setState({card: card});
+    }
+
+    unarchiveCard() {
+        let card = this.state.card;
+        card.is_archive = false;
+        this.updateCard(card);
     }
 
     toggleModal() {
@@ -133,48 +144,12 @@ export default class Card extends Component<Props, State> {
         this.toggleModal();
     }
 
-    attachFileToCard(file: File) {
-        const data = new FormData();
-        let id = this.state.card.id as number;
-        let stringId = id.toString();
-        data.append('attached_file', file);
-        data.append('card_id', stringId);
-        data.append('file_name', file.name);
-        axios.post(`/api/attachments/`, data, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-            .then(() => {
-                this.props.afterModify();
-                this.setState({newAttachmentAdded: true});
-                this.fetchCard();
-            });
+    attachmentAdded() {
+        this.setState({newAttachmentAdded: true});
     }
 
-    handleFileChange(selectorFiles: FileList | null) {
-        if (selectorFiles) {
-            let file = selectorFiles.item(0);
-            if (file) {
-                this.attachFileToCard(file);
-            }
-        }
-    }
-
-    attachmentInput() {
-        return <div className="custom-file">
-            <input
-                type="file"
-                className="custom-file-input"
-                id="inputGroupFile01"
-                onChange={(e) => this.handleFileChange(e.target.files)}
-                aria-describedby="inputGroupFileAddon01"
-            />
-            <label className="custom-file-label" htmlFor="inputGroupFile01">
-                Attach file
-            </label>
-        </div>
-
+    commentAdded() {
+        this.updateCard(this.state.card);
     }
 
     cardName() {
@@ -200,14 +175,15 @@ export default class Card extends Component<Props, State> {
 
     cardDeleteArchive() {
         if (this.state.card.is_archive) {
-            return [
+            return <MDBBtnGroup size="sm">
                 <MDBBtn color="primary" size={'sm'} onClick={this.toggleArchive}>
                     <MDBIcon far icon="trash-alt"/> Return card to table
                 </MDBBtn>
-                ,
                 <MDBBtn color="danger" size={'sm'} onClick={this.deleteCard}>
                     <MDBIcon far icon="trash-alt"/> Delete
-                </MDBBtn>]
+                </MDBBtn>
+            </MDBBtnGroup>
+
         } else {
             return <MDBBtn color="primary" size={'sm'} onClick={this.toggleArchive}>
                 <MDBIcon far icon="trash-alt"/> Archive
@@ -247,13 +223,15 @@ export default class Card extends Component<Props, State> {
                 <MDBModalBody>
                     <MDBContainer>
                         <MDBRow>
-                            <MDBCol size="9">
+                            <MDBCol sm={"12"} md={"9"}>
                                 {this.cardDescription()}
                                 {this.attachments()}
+                                <CommentsList cardId={this.state.card.id} afterModify={this.props.afterModify}/>
                             </MDBCol>
-                            <MDBCol>
+                            <MDBCol sm={"12"} md={"3"}>
                                 {this.cardDeleteArchive()}
-                                {this.attachmentInput()}
+                                <AttachmentInput cardId={this.state.card.id} afterAdd={this.attachmentAdded}
+                                                 size={'lg'}/>
                             </MDBCol>
                         </MDBRow>
                     </MDBContainer>
@@ -276,18 +254,47 @@ export default class Card extends Component<Props, State> {
                     <SmallSpinner/>
                 </MDBCardBody>
             </MDBCard>
+        } else if (this.state.card.is_archive) {
+            return <MDBCard>
+                <MDBCardBody>
+                    <div className={'form-inline'}>
+                        {this.state.card.name}
+                        <MDBBtnGroup size="sm">
+                            <MDBBtn color={'success'} size={'sm'} onClick={this.unarchiveCard}>
+                                <MDBIcon icon="undo"/>
+                            </MDBBtn>
+                            <MDBBtn color={'danger'} size={'sm'} onClick={this.deleteCard}>
+                                <MDBIcon icon="trash-alt"/>
+                            </MDBBtn>
+                        </MDBBtnGroup>
+                    </div>
+                </MDBCardBody>
+            </MDBCard>
         }
-        return <MDBCard>
+        return <MDBCard onClick={this.toggleModal}>
             <MDBCardBody>
-                <span onClick={this.toggleModal}>{this.state.card.name}</span>
-                {this.modal()}
+                {this.state.card.name}
             </MDBCardBody>
         </MDBCard>
+    }
+
+    renderComments() {
+        const items: any[] = [];
+        if (this.state.card.comments) {
+            this.state.card.comments
+                .forEach(comment => {
+                        items.push(<Comment afterModify={this.commentDeleted.bind(this)} key={comment.id}
+                                            comment={comment}/>);
+                    }
+                )
+        }
+        return items
     }
 
     render() {
         return <div>
             {this.view()}
+            {this.modal()}
         </div>;
     }
 }

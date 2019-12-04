@@ -1,0 +1,24 @@
+.custom-file-input:lang(en) ~ .custom-file-label::after {
+    content: "+";
+}
+
+.custom-file-label::after {
+    content: "+";
+}
+
+.custom-file-label {
+    background-color: #EEEEEE;
+}
+.sm-label::after {
+    display: none;
+}
+
+.custom-file {
+    max-width: 170px;
+}
+
+.sm{
+    width:40px;
+}
+.custom-file-input {
+}

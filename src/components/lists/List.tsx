@@ -204,6 +204,7 @@ export default class List extends Component<Props, State> {
         return <MDBCol xl={"3"} lg={"4"} md={"6"} sm={"6"} size={"12"}>
             {this.view()}
         </MDBCol>;
+        
     }
 
 }

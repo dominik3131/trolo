@@ -48,7 +48,8 @@ class Login extends Component {
     }
 
     validateForm() {
-        return this.state.username.length > 0 && this.state.password.length > 7;
+        // return this.state.username.length > 0 && this.state.password.length > 7;
+        return this.state.username.length > 0;
     }
 
     setLogin = (event: { target: { value: any; }; }) => {
