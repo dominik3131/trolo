@@ -17,8 +17,6 @@ class CustomSerializer(serializers.ModelSerializer):
             return expanded_fields
 
 
-
-
 class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(write_only=True)
@@ -38,15 +36,32 @@ class UserSerializer(serializers.ModelSerializer):
         # Tuple of serialized model fields (see link [2])
         fields = ( "id", "username", "password", )
 
+
+
+class AttachmentSimpleSerializer(CustomSerializer):
+    
+    class Meta:
+        model = Attachment
+        fields = '__all__'
+
 class CardSimpleSerializer(CustomSerializer):
     class Meta:
         model = Card
         fields = '__all__'
 
+class CommentSimpleSerializer(CustomSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        
 class CardDetailsSerializer(CustomSerializer):
+    attachments = AttachmentSimpleSerializer(many=True, read_only=True)
+    comments = CommentSimpleSerializer(many=True, read_only=True)
+
     class Meta:
         model = Card
         fields = '__all__'
+        extra_fields = ['attachments', 'comments']
 
 
 class ListaSimpleSerializer(CustomSerializer):
@@ -55,7 +70,7 @@ class ListaSimpleSerializer(CustomSerializer):
         fields = '__all__'
 
 class ListaDetailsSerializer(CustomSerializer):
-    cards = CardSimpleSerializer(many=True)
+    cards = CardDetailsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Lista
@@ -64,10 +79,11 @@ class ListaDetailsSerializer(CustomSerializer):
 
 
 class TablesSimpleSerializer(CustomSerializer):
+    
     class Meta:
         model = Table
         fields = '__all__'
-
+        read_only_fields = ['id_owner']
 
 class TableDetailsSerializer(CustomSerializer):
     listy = ListaDetailsSerializer(many=True, read_only=True)
@@ -77,9 +93,3 @@ class TableDetailsSerializer(CustomSerializer):
         fields = '__all__'
         extra_fields = ['listy']
 
-# class UserSerializer(serializers.ModelSerializer):
-#     #snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
-
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'snippets']

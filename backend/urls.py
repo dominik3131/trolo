@@ -1,8 +1,11 @@
+from django.conf import settings
+from django.conf.urls import include
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path,include
-from django.contrib.auth import views as auth_views
+from django.urls import path
+from rest_auth.views import LogoutView
 from rest_framework.urlpatterns import format_suffix_patterns
-from rest_auth.views import LoginView, LogoutView
+
 from .views import *
 
 urlpatterns = [
@@ -14,10 +17,16 @@ urlpatterns = [
     path('api/lists/<int:pk>', ListaDetail.as_view()),
     path('api/cards/', CardList.as_view()),
     path('api/cards/<int:pk>', CardDetail.as_view()),
+    path('api/attachments/', AttachmentList.as_view()),
+    path('api/attachments/<int:pk>', AttachmentDetail.as_view()),
+    path('api/cards/comments/<int:pk>', CardsCommentsList.as_view()),
+    path('api/comments/<int:pk>', CommentDetail.as_view()),
+    path('api/comments/', CommentAdd.as_view()),
+    path('api/cards/attachments/<int:pk>', CardsAttachmentList.as_view()),
     path('api/o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('api/users/create', CreateUserView.as_view()),
     path('api/login/',LoginView.as_view(),name = 'login'),
     path('api/logout/',LogoutView.as_view(),name='logout'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = format_suffix_patterns(urlpatterns)

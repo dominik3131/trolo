@@ -46,7 +46,6 @@ export default class CreateTable extends Component {
         if (this.state.background !== '') table.background = this.state.background;
         table.visibility = this.state.visibility;
         table.id_team = this.state.team;
-        console.log(table);
         axios.post(`api/tables/`, {...table}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -70,7 +69,7 @@ export default class CreateTable extends Component {
             name: '',
             visibility: 0,
             team: undefined
-        })
+        });
         this.toggle();
     }
 

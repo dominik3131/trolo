@@ -43,14 +43,18 @@ class TableList(generics.ListCreateAPIView):
     serializer_class = TablesSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Table.objects.filter(id_team__users__in= [user])
+        return Table.objects.filter(id_owner = user).exclude(is_closed = True)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(id_owner=user)
 
 
 @permission_classes([CanGetTable])
 class TableDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/tables/:table_id
-    Method: GET/PUT/PATCH
+    Method: GET/PUT/PATCH/DELETE
     '''
     queryset = Table.objects.all()
     serializer_class = TableDetailsSerializer
@@ -64,20 +68,16 @@ class ListaList(generics.ListCreateAPIView):
     serializer_class = ListaSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Lista.objects.filter(id_table__id_team__users__in= [user])
+        return Lista.objects.filter(id_table__id_owner= user)
 
 
-@permission_classes([CanGetList])
-class ListaDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
+class ListaDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/lists/:list_id
-    Method: GET/PUT/PATCH
+    Method: GET/PUT/PATCH/DELETE
     '''
     queryset = Lista.objects.all()
-    method_serializer_classes = {
-        ('GET', ): ListaDetailsSerializer,
-        ('PUT', 'PATCH'): ListaSimpleSerializer
-    }
+    serializer_class = ListaDetailsSerializer
 
 
 class CardList(generics.ListCreateAPIView):
@@ -89,12 +89,12 @@ class CardList(generics.ListCreateAPIView):
     serializer_class = CardSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Card.objects.filter(id_list__id_table__id_team__users__in= [user])
+        return Card.objects.filter(id_list__id_table__id_owner= user)
 
 class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
     API: /api/cards/:card_id
-    Method: GET/PUT/PATCH
+    Method: GET/PUT/PATCH/DELETE
     '''
     queryset = Card.objects.all()
     method_serializer_classes = {
@@ -116,3 +116,68 @@ class CustomLoginView(LoginView):
         mydata = {"message": "some message", "status": "success"}
         orginal_response.data.update(mydata)
         return orginal_response
+
+class AttachmentList(generics.CreateAPIView):
+    '''
+    API: /api/attachments/
+    Method: POST
+    Description: Add attachment to card.
+    '''
+    queryset = Card.objects.all()
+    serializer_class = AttachmentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Card.objects.filter(id_list__id_table__id_owner= user)
+
+class AttachmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/attachments/:attachment_id
+    Method: GET/PUT/PATCH/DELETE
+    Description: Get, update or delete attachment by its id.
+    '''
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSimpleSerializer
+
+class CardsAttachmentList(generics.ListAPIView):
+    '''
+    API: /api/cards/attachments/:card_id
+    Method: GET
+    Description: Get all attachments of a card by its id.
+    '''
+    serializer_class = AttachmentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Attachment.objects.filter(card_id__id_list__id_table__id_owner= user).filter(card_id=self.kwargs['pk'])
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/comments/:comment_id
+    Method: GET/PUT/PATCH/DELETE
+    Description: Get, update or delete comment by its id.
+    '''
+    queryset = Comment.objects.all()
+    serializer_class = CommentSimpleSerializer
+
+class CommentAdd(generics.CreateAPIView):
+    '''
+    API: /api/comments/
+    Method: POST
+    Description: Add comment to card.
+    '''
+    queryset = Comment.objects.all()
+    serializer_class = CommentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Comment.objects.filter(card_id__id_list__id_table__id_owner= user)
+
+
+class CardsCommentsList(generics.ListAPIView):
+    '''
+    API: /api/cards/comments/:card_id
+    Method: GET
+    Description: Get all comments of a card by its id.
+    '''
+    serializer_class = CommentSimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Comment.objects.filter(card_id__id_list__id_table__id_owner = user).filter(card_id=self.kwargs['pk'])

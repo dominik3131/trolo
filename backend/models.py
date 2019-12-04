@@ -22,12 +22,15 @@ class Table(models.Model):
         (2, 'Public'),
     )
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=200,default=None, blank=True, null=True)
     visibility = models.IntegerField(default=0, choices=VISIBILITY)
     last_open = models.DateTimeField(blank=True, null=True)
     last_modyfied = models.DateTimeField(blank=True, null=True)
     favourite = models.BooleanField(default=False)
     background = models.CharField(max_length=200,default=None, blank=True, null=True)
-    id_team = models.ForeignKey(Team, on_delete=models.CASCADE,related_name='team_id')
+    is_closed = models.BooleanField(default=False)
+    id_team = models.ForeignKey(Team, on_delete=models.CASCADE,related_name='team_id', blank=True, null=True)
+    id_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='table_owner',default=-1)
 
     def __str__(self):
         return self.name
@@ -39,6 +42,7 @@ class Table(models.Model):
 class Lista(models.Model):
     name = models.CharField(max_length=100)
     id_table = models.ForeignKey(Table, related_name='listy', on_delete=models.CASCADE)
+    is_archive =  models.BooleanField(default=False)
     lookup_field = "name"
     
     def __str__(self):
@@ -57,6 +61,7 @@ class Card(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500,default=None, blank=True, null=True)
     active_to = models.DateTimeField(default=None, blank=True, null=True)
+    is_archive =  models.BooleanField(default=False)
     id_list = models.ForeignKey(Lista, related_name='cards',on_delete=models.CASCADE)
     lookup_field = "name"
 
@@ -77,3 +82,22 @@ class Label(models.Model):
 
     def get_absolute_url(self):
         return reverse("label_detail", kwargs={"pk": self.pk})
+
+
+
+class Attachment(models.Model):
+    file_name = models.CharField(max_length=50)
+    attached_file = models.FileField(upload_to ='attachments/%Y/%m/%D/')
+    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='attachments')
+
+    def __str__(self):
+        return self.file_name
+
+    def get_absolute_url(self):
+        return reverse("attachment_detail", kwargs={"pk": self.pk})
+
+
+class Comment(models.Model):
+    content = models.CharField(max_length=1000)
+    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='comments')
+
