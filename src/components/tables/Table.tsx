@@ -236,7 +236,7 @@ export default class Table extends Component<Props, State> {
             ]
 
         } else {
-            return <span onClick={this.toggleDescription}>{this.state.table.description}</span>
+            return <div className={"popover"} onClick={this.toggleDescription}>{this.state.table.description}</div>
         }
     }
 
