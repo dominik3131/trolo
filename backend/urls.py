@@ -23,6 +23,8 @@ urlpatterns = [
     path('api/comments/<int:pk>', CommentDetail.as_view()),
     path('api/comments/', CommentAdd.as_view()),
     path('api/cards/attachments/<int:pk>', CardsAttachmentList.as_view()),
+    path('api/labels/<int:pk>', LabelDetail.as_view()),
+    path('api/tables/labels/<int:pk>', LabelsOfTable.as_view()),
     path('api/o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('api/users/create', CreateUserView.as_view()),
     path('api/login/',LoginView.as_view(),name = 'login'),
