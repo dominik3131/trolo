@@ -2,18 +2,21 @@ from django.db import models
 from django.urls import reverse
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
+default_labels_colors = ['#f54242','#f59c42','#f7db07','#57f707','#076ff7','#f707e7']
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
     id_admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_admin_id')
     users = models.ManyToManyField(User, related_name='users_in_team')
-
+       
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse("team_detail", kwargs={"pk": self.pk})
-
 
 class Table(models.Model):
     VISIBILITY = (
@@ -38,6 +41,13 @@ class Table(models.Model):
     def get_absolute_url(self):
         return reverse("table_detzail", kwargs={"pk": self.pk})
 
+
+# when new table is created adds default labels
+@receiver(post_save, sender=Table)
+def add_default_labels_after_table_created(sender, instance, created, **kwargs):
+    if created:
+        for color  in default_labels_colors:
+            Label.objects.create(name=str(instance.id) +'_'+ color ,color=color,id_table=instance)
 
 class Lista(models.Model):
     name = models.CharField(max_length=100)
@@ -72,19 +82,6 @@ class Card(models.Model):
         return reverse("card_detail", kwargs={"pk": self.pk})
 
 
-
-class Label(models.Model):
-    name = models.CharField(max_length=50)
-    color = models.CharField(validators=[RegexValidator('#\d{6}', message='Not a hex color', code='nomatch')], max_length=7)
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse("label_detail", kwargs={"pk": self.pk})
-
-
-
 class Attachment(models.Model):
     file_name = models.CharField(max_length=50)
     attached_file = models.FileField(upload_to ='attachments/%Y/%m/%D/')
@@ -101,3 +98,15 @@ class Comment(models.Model):
     content = models.CharField(max_length=1000)
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='comments')
 
+class Label(models.Model):
+    name = models.CharField(max_length=50)
+    color = models.CharField(validators=[RegexValidator('#\d{6}', message='Not a hex color', code='nomatch')], max_length=7)
+    id_card = models.ForeignKey(Card,on_delete = models.CASCADE,related_name='labels',null=True)
+    #if has table assigned is default label (when assigning to card, copy is made)
+    id_table = models.ForeignKey(Table,on_delete = models.CASCADE,related_name='labels',null=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("label_detail", kwargs={"pk": self.pk})
