@@ -35,6 +35,7 @@ class Table(models.Model):
     id_team = models.ForeignKey(Team, on_delete=models.CASCADE,related_name='team_id', blank=True, null=True)
     id_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='table_owner',default=-1)
 
+
     def __str__(self):
         return self.name
 
@@ -74,6 +75,7 @@ class Card(models.Model):
     is_archive =  models.BooleanField(default=False)
     id_list = models.ForeignKey(Lista, related_name='cards',on_delete=models.CASCADE)
     lookup_field = "name"
+    labels = models.ManyToManyField("backend.Label", related_name='labels')
 
     def __str__(self):
         return self.name
@@ -101,8 +103,6 @@ class Comment(models.Model):
 class Label(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(validators=[RegexValidator('#\d{6}', message='Not a hex color', code='nomatch')], max_length=7)
-    id_card = models.ForeignKey(Card,on_delete = models.CASCADE,related_name='labels',null=True)
-    #if has table assigned is default label (when assigning to card, copy is made)
     id_table = models.ForeignKey(Table,on_delete = models.CASCADE,related_name='labels',null=True)
 
     def __str__(self):

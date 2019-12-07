@@ -53,15 +53,19 @@ class CommentSimpleSerializer(CustomSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
-        
+class LabelTemplateSerializer(CustomSerializer):
+    class Meta:
+        model = Label
+        fields = '__all__'        
 class CardDetailsSerializer(CustomSerializer):
     attachments = AttachmentSimpleSerializer(many=True, read_only=True)
     comments = CommentSimpleSerializer(many=True, read_only=True)
+    labels = LabelTemplateSerializer(many=True, read_only=True)
 
     class Meta:
         model = Card
         fields = '__all__'
-        extra_fields = ['attachments', 'comments']
+        extra_fields = ['attachments', 'comments','labels']
 
 
 class ListaSimpleSerializer(CustomSerializer):
@@ -92,4 +96,6 @@ class TableDetailsSerializer(CustomSerializer):
         model = Table
         fields = '__all__'
         extra_fields = ['listy']
+
+
 

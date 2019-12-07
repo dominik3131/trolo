@@ -181,3 +181,27 @@ class CardsCommentsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Comment.objects.filter(card_id__id_list__id_table__id_owner = user).filter(card_id=self.kwargs['pk'])
+
+
+class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/labels/:label_id
+    Method: GET/PUT/PATCH/DELETE
+    Description: Get, update or delete one of available labels by its id.
+    '''
+    serializer_class = LabelTemplateSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Label.objects.filter(id_table__id_owner = user)
+
+class LabelsOfTable(generics.ListAPIView):
+    '''
+    API: /api/tables/labels/:table_id
+    Method: GET
+    Description: Get all label of a table by its id.
+
+    '''
+    serializer_class = LabelTemplateSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Label.objects.filter(id_table__id_owner = user).filter(id_table=self.kwargs['pk'])
