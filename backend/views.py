@@ -205,3 +205,49 @@ class LabelsOfTable(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Label.objects.filter(id_table__id_owner = user).filter(id_table=self.kwargs['pk'])
+
+        
+class ActivityCreate(generics.CreateAPIView):
+    '''
+    API: /api/activities/
+    Method: POST
+    Description: Add activity to card.
+    '''
+    queryset = Card.objects.all()
+    serializer_class = ActivitySimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Card.objects.filter(id_list__id_table__id_owner= user)
+
+class ActivityDetail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    API: /api/activities/:activity_id
+    Method: GET/PUT/PATCH/DELETE
+    Description: Get, update or delete activity by its id.
+    '''
+    queryset = Activity.objects.all()
+    serializer_class = ActivitySimpleSerializer
+
+class CardsActivitiesList(generics.ListAPIView):
+    '''
+    API: /api/cards/activities/:card_id
+    Method: GET
+    Description: Get all activities of a card by its id.
+    '''
+    serializer_class = ActivitySimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return Activity.objects.filter(card_id=self.kwargs['pk'])
+
+class CardAllActivitiesList(generics.ListAPIView):
+    '''
+    API: /api/cards/all_activities/:card_id
+    Method: GET
+    Description: Get all activities and comments of a card by its id and sorted by date.
+    '''
+    serializer_class = ActivitySimpleSerializer
+    def get_queryset(self):
+        user = self.request.user
+        comments = Comment.objects.filter(card_id=self.kwargs['pk'])
+        activities = Activity.objects.filter(card_id=self.kwargs['pk'])
+        return comments.union(activities).order_by('-create_date')

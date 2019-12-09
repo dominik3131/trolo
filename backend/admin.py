@@ -1,11 +1,5 @@
 from django.contrib import admin
-from .models import Team
-from .models import Table
-from .models import Lista
-from .models import Card
-from .models import Label
-from .models import Attachment
-from .models import Comment
+from .models import *
 from django.contrib.admin.views.main import ChangeList
 from .forms import TeamChangeListForm
 
@@ -16,6 +10,7 @@ admin.site.register(Card)
 admin.site.register(Label)
 admin.site.register(Attachment)
 admin.site.register(Comment)
+admin.site.register(Activity)
 
 class TeamChangeList(ChangeList):
     def __init__(self, request, model, list_display,
