@@ -4,6 +4,7 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from datetime import datetime
 
 default_labels_colors = ['#f54242','#f59c42','#f7db07','#57f707','#076ff7','#f707e7']
 
@@ -99,6 +100,14 @@ class Attachment(models.Model):
 class Comment(models.Model):
     content = models.CharField(max_length=1000)
     card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='comments')
+    create_date = models.DateTimeField(default=datetime.now)
+    editable = models.BooleanField(default=True)
+
+class Activity(models.Model):
+    content = models.CharField(max_length=300)
+    card_id = models.ForeignKey(Card, on_delete=models.CASCADE,related_name='activities')
+    create_date = models.DateTimeField(default=datetime.now)
+    editable = models.BooleanField(default=False)
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
