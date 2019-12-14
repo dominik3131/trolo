@@ -1,4 +1,5 @@
 import CommentModel from "./CommentModel";
+import ActivityModel from "./ActivityModel";
 
 export default class CardModel {
     id: number | undefined;
@@ -7,4 +8,5 @@ export default class CardModel {
     description: string | undefined;
     id_list: number | undefined;
     is_archive: boolean | undefined;
+    activities: ActivityModel[] | undefined;
 }

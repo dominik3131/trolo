@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import CardModel from "../../data-models/CardModel";
 import Comment from "../comments/Comment";
+import Activity from "../cards/Activity";
+import ActivityModel from "../../data-models/ActivityModel"
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import {
@@ -32,6 +34,7 @@ interface State {
     toggleCreate: boolean
     newCardName: string
     newAttachmentAdded: boolean
+    activities: ActivityModel[]
 }
 
 export default class Card extends Component<Props, State> {
@@ -45,7 +48,8 @@ export default class Card extends Component<Props, State> {
             cardNameInputOpen: false,
             toggleCreate: false,
             newCardName: '',
-            newAttachmentAdded: false
+            newAttachmentAdded: false,
+            activities: []
         };
         this.bindMethods();
         this.fetchCard();
@@ -214,6 +218,24 @@ export default class Card extends Component<Props, State> {
         }
     }
 
+    activityChanged() {
+        this.props.afterModify();
+        //this.fetchActivities();
+    }
+
+    activities() {
+        const items: any[] = [];
+        if (this.state.card.activities) {
+            this.state.card.activities
+                .forEach(activity => {
+                        items.push(<Activity afterModify={this.activityChanged.bind(this)} key={activity.id}
+                            activity={activity}/>);
+                    }
+                )
+        }
+        return items
+    }
+
     modal() {
         return <MDBContainer>
             <MDBModal size="fluid" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
@@ -226,6 +248,7 @@ export default class Card extends Component<Props, State> {
                             <MDBCol sm={"12"} md={"9"}>
                                 {this.cardDescription()}
                                 {this.attachments()}
+                                {this.activities()}
                                 <CommentsList cardId={this.state.card.id} afterModify={this.props.afterModify}/>
                             </MDBCol>
                             <MDBCol sm={"12"} md={"3"}>
