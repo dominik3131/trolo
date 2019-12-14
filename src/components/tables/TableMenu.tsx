@@ -99,7 +99,7 @@ export default class TableMenu extends Component<Props, State> {
         }
         let cards: JSX.Element[] = [];
         archivedCards.forEach(
-            card => cards.push(<Card key={card.id} card={card} afterModify={this.cardOrListEdited}/>)
+            card => cards.push(<Card key={card.id} card={card} afterModify={this.cardOrListEdited} afterAdd={this.cardOrListEdited}/>)
         );
         return <div>{cards}</div>
     }

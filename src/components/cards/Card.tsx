@@ -23,6 +23,7 @@ import AttachmentInput from "../Attachments/AttachmentInput";
 interface Props {
     card: CardModel
     afterModify: any
+    afterAdd: any
 }
 
 interface State {
@@ -53,6 +54,7 @@ export default class Card extends Component<Props, State> {
         };
         this.bindMethods();
         this.fetchCard();
+        this.createActivity("Card created!");
     }
 
     bindMethods() {
@@ -66,6 +68,7 @@ export default class Card extends Component<Props, State> {
         this.cancelEdit = this.cancelEdit.bind(this);
         this.attachmentAdded = this.attachmentAdded.bind(this);
         this.unarchiveCard = this.unarchiveCard.bind(this);
+        this.createActivity = this.createActivity.bind(this);
     }
 
     fetchCard() {
@@ -81,7 +84,7 @@ export default class Card extends Component<Props, State> {
             .then((resp) => {
                 this.setState({card: resp.data});
                 this.props.afterModify();
-            });
+            });  
     };
 
     deleteCard() {
@@ -90,6 +93,17 @@ export default class Card extends Component<Props, State> {
                 this.props.afterModify();
             });
     };
+
+    createActivity(activityType: string) {
+        let activity = new ActivityModel();
+        activity.content = activityType;
+        activity.card_id = this.props.card.id;
+        axios.post('/api/activities/', activity).then(
+            (resp) => {
+                this.props.afterAdd(resp.data)
+            }
+        );
+    }
 
     commentDeleted() {
         this.updateCard(this.state.card);
@@ -109,6 +123,7 @@ export default class Card extends Component<Props, State> {
         let card = this.state.card;
         card.is_archive = false;
         this.updateCard(card);
+        this.createActivity("Card unarchived!");
     }
 
     toggleModal() {
@@ -124,8 +139,8 @@ export default class Card extends Component<Props, State> {
         card.name = this.state.newCardName;
         this.setState({card: card});
         this.toggleNameInput();
+        this.createActivity("Card name updated!");
     }
-
 
     nameChanged(e: any) {
         let name = e.target.value;
@@ -141,6 +156,7 @@ export default class Card extends Component<Props, State> {
     saveAndUpdateCard() {
         this.toggleModal();
         this.updateCard(this.state.card);
+        this.createActivity("Card updated!");
     }
 
     cancelEdit() {

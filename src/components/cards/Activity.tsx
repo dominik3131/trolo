@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
-import { MDBCard, MDBCardBody } from "mdbreact";
+import { MDBCard, MDBCardBody, MDBRow } from "mdbreact";
 import ActivityModel from '../../data-models/ActivityModel';
 
 interface Props {
@@ -36,16 +36,15 @@ export default class Activity extends Component<Props, State> {
             });
     }
 
-    updateCard(activity: ActivityModel) {
-        this.setState({activity: activity});
+    updateActivity(activity: ActivityModel) {
         axios.put(`/api/activities/${this.state.activity.id}`, activity)
             .then((resp) => {
                 this.setState({activity: resp.data});
                 this.props.afterModify();
-            });
+            });  
     };
 
-    commentDescription() {
+    activityDescription() {
         return <div>
                 {this.state.activity.content}
             </div>;
@@ -61,8 +60,8 @@ export default class Activity extends Component<Props, State> {
             </MDBCard>
         }
         return <MDBCard>
-            <MDBCardBody className={"text-left"}>
-                {this.commentDescription()}
+            <MDBCardBody className={"text-left"}>   
+                {this.activityDescription()}
             </MDBCardBody>
         </MDBCard>
     }
