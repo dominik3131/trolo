@@ -284,6 +284,7 @@ export default class Card extends Component<Props, State> {
                     <MDBContainer>
                         <MDBRow>
                             <MDBCol sm={"12"} md={"9"}>
+                                
                                 {this.cardDescription()}
                                 {this.attachments()}
                                 {this.activities()}
