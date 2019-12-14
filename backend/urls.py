@@ -23,16 +23,16 @@ urlpatterns = [
 
     path('api/attachments/', AttachmentList.as_view()),
     path('api/attachments/<int:pk>', AttachmentDetail.as_view()),
-    path('api/cards/attachments/<int:pk>', CardsAttachmentList.as_view()),
+    path('api/cards/attachments/<uuid:pk>', CardsAttachmentList.as_view()),
 
-    path('api/cards/comments/<int:pk>', CardsCommentsList.as_view()),
+    path('api/cards/comments/<uuid:pk>', CardsCommentsList.as_view()),
     path('api/comments/<int:pk>', CommentDetail.as_view()),
     path('api/comments/', CommentAdd.as_view()),
 
     path('api/activities/', ActivityCreate.as_view()),
     path('api/activities/<int:pk>', ActivityDetail.as_view()),
-    path('api/cards/activities/<int:pk>', CardsActivitiesList.as_view()),
-    path('api/cards/all_activities/<int:pk>', CardAllActivitiesList.as_view()),
+    path('api/cards/activities/<uuid:pk>', CardsActivitiesList.as_view()),
+    path('api/cards/all_activities/<uuid:pk>', CardAllActivitiesList.as_view()),
 
     path('api/labels/<int:pk>', LabelDetail.as_view()),
     path('api/tables/labels/<int:pk>', LabelsOfTable.as_view()),
