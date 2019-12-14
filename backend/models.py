@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from datetime import datetime
+import uuid
+
 
 default_labels_colors = ['#f54242','#f59c42','#f7db07','#57f707','#076ff7','#f707e7']
 
@@ -70,13 +72,14 @@ class Lista(models.Model):
 
 
 class Card(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500,default=None, blank=True, null=True)
     active_to = models.DateTimeField(default=None, blank=True, null=True)
     is_archive =  models.BooleanField(default=False)
     id_list = models.ForeignKey(Lista, related_name='cards',on_delete=models.CASCADE)
     lookup_field = "name"
-    labels = models.ManyToManyField("backend.Label", related_name='labels')
+    labels = models.ManyToManyField("backend.Label", related_name='labels',blank=True)
 
     def __str__(self):
         return self.name

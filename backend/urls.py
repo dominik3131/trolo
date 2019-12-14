@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/lists/<int:pk>', ListaDetail.as_view()),
 
     path('api/cards/', CardList.as_view()),
-    path('api/cards/<int:pk>', CardDetail.as_view()),
+    path('api/cards/<uuid:pk>', CardDetail.as_view()),
 
     path('api/attachments/', AttachmentList.as_view()),
     path('api/attachments/<int:pk>', AttachmentDetail.as_view()),
