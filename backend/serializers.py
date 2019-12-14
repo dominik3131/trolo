@@ -68,7 +68,7 @@ class CardDetailsSerializer(CustomSerializer):
     attachments = AttachmentSimpleSerializer(many=True, read_only=True)
     comments = CommentSimpleSerializer(many=True, read_only=True)
     labels = LabelTemplateSerializer(many=True, read_only=True)
-    activities = ActivitySimpleSerializer(many=True)
+    activities = ActivitySimpleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Card
