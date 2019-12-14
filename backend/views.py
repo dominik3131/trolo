@@ -237,7 +237,7 @@ class CardsActivitiesList(generics.ListAPIView):
     serializer_class = ActivitySimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Activity.objects.filter(card_id=self.kwargs['pk'])
+        return Activity.objects.filter(card_id__id_list__id_table__id_owner= user).filter(card_id=self.kwargs['pk'])
 
 class CardAllActivitiesList(generics.ListAPIView):
     '''
@@ -250,4 +250,4 @@ class CardAllActivitiesList(generics.ListAPIView):
         user = self.request.user
         comments = Comment.objects.filter(card_id=self.kwargs['pk'])
         activities = Activity.objects.filter(card_id=self.kwargs['pk'])
-        return comments.union(activities).order_by('-create_date')
+        return comments.union(activities).filter(card_id__id_list__id_table__id_owner= user).order_by('-create_date')
