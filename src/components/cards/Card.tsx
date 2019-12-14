@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import CardModel from "../../data-models/CardModel";
 import Comment from "../comments/Comment";
 import Activity from "../cards/Activity";
+import Label from "../cards/Label";
 import ActivityModel from "../../data-models/ActivityModel"
+import LabelModel from "../../data-models/LabelModel"
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
 import {
@@ -14,7 +16,8 @@ import {
     MDBModalBody,
     MDBModalFooter,
     MDBModalHeader,
-    MDBRow
+    MDBRow,
+    MDBBadge
 } from "mdbreact";
 import Attachments from "../Attachments/Attachments";
 import CommentsList from "../comments/CommentsList";
@@ -36,6 +39,7 @@ interface State {
     newCardName: string
     newAttachmentAdded: boolean
     activities: ActivityModel[]
+    labels: LabelModel[]
 }
 
 export default class Card extends Component<Props, State> {
@@ -50,7 +54,8 @@ export default class Card extends Component<Props, State> {
             toggleCreate: false,
             newCardName: '',
             newAttachmentAdded: false,
-            activities: []
+            activities: [],
+            labels: []
         };
         this.bindMethods();
         this.fetchCard();
@@ -234,6 +239,23 @@ export default class Card extends Component<Props, State> {
         }
     }
 
+    labelChanged(){
+
+    }
+
+    renderLabels() {
+        const items: any[] = [];
+        if (this.state.labels) {
+            this.state.labels
+                .forEach(label => {
+                        items.push(<Label afterModify={this.labelChanged.bind(this)} key={label.id}
+                            label={label}/>);
+                    }
+                )
+        }
+        return items
+    }
+
     activityChanged() {
         this.props.afterModify();
         //this.fetchActivities();
@@ -311,11 +333,14 @@ export default class Card extends Component<Props, State> {
             </MDBCard>
         }
         return <MDBCard onClick={this.toggleModal}>
+            {this.renderLabels()}
             <MDBCardBody>
                 {this.state.card.name}
             </MDBCardBody>
         </MDBCard>
     }
+
+    
 
     renderComments() {
         const items: any[] = [];
