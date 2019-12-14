@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/cards/activities/<int:pk>', CardsActivitiesList.as_view()),
     path('api/cards/all_activities/<int:pk>', CardAllActivitiesList.as_view()),
 
+    path('api/labels', LabelCreate.as_view()),
     path('api/labels/<int:pk>', LabelDetail.as_view()),
     path('api/tables/labels/<int:pk>', LabelsOfTable.as_view()),
 

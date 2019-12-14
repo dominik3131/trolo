@@ -251,3 +251,13 @@ class CardAllActivitiesList(generics.ListAPIView):
         comments = Comment.objects.filter(card_id=self.kwargs['pk'])
         activities = Activity.objects.filter(card_id=self.kwargs['pk'])
         return comments.union(activities).order_by('-create_date')
+
+class LabelCreate(generics.CreateAPIView):
+    '''
+    API: /api/labels/
+    Method: POST
+    Description: Add activity to card.
+    '''
+    queryset = Label.objects.all()
+    serializer_class = LabelTemplateSerializer
+ 
