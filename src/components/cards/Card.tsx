@@ -17,11 +17,12 @@ import {
     MDBModalFooter,
     MDBModalHeader,
     MDBRow,
-    MDBBadge
+    MDBNavItem
 } from "mdbreact";
 import Attachments from "../Attachments/Attachments";
 import CommentsList from "../comments/CommentsList";
 import AttachmentInput from "../Attachments/AttachmentInput";
+import CreateLabel from './CreateLabel';
 
 interface Props {
     card: CardModel
@@ -38,6 +39,7 @@ interface State {
     toggleCreate: boolean
     newCardName: string
     newAttachmentAdded: boolean
+    toggleLabelCreatorC: boolean
     activities: ActivityModel[]
     labels: LabelModel[]
 }
@@ -54,12 +56,12 @@ export default class Card extends Component<Props, State> {
             toggleCreate: false,
             newCardName: '',
             newAttachmentAdded: false,
+            toggleLabelCreatorC: false,
             activities: [],
             labels: []
         };
         this.bindMethods();
         this.fetchCard();
-        this.createActivity("Card created!");
     }
 
     bindMethods() {
@@ -74,6 +76,7 @@ export default class Card extends Component<Props, State> {
         this.attachmentAdded = this.attachmentAdded.bind(this);
         this.unarchiveCard = this.unarchiveCard.bind(this);
         this.createActivity = this.createActivity.bind(this);
+        this.toggleLabelCreator = this.toggleLabelCreator.bind(this);
     }
 
     fetchCard() {
@@ -122,6 +125,10 @@ export default class Card extends Component<Props, State> {
         let card = this.state.card;
         card.is_archive = !card.is_archive;
         this.setState({card: card});
+    }
+
+    toggleLabelCreator() {
+        this.setState({toggleLabelCreatorC: !this.state.toggleLabelCreatorC})
     }
 
     unarchiveCard() {
@@ -239,6 +246,22 @@ export default class Card extends Component<Props, State> {
         }
     }
 
+    labelCreator() {
+        console.log("witamy w piekle " + this.state.toggleLabelCreatorC);
+        if (this.state.toggleLabelCreatorC) {
+            console.log("create label output");
+            if (this.state.card.id) {
+                return <CreateLabel afterAdd={this.labelAdded.bind(this)}
+                                   toggleCreator={this.toggleLabelCreator.bind(this)}
+                                   cardId={this.state.card.id}/>
+            }
+        }
+    }
+
+    labelAdded() {
+
+    }
+
     labelChanged(){
 
     }
@@ -273,7 +296,9 @@ export default class Card extends Component<Props, State> {
         }
         return items
     }
+  
 
+    
     modal() {
         return <MDBContainer>
             <MDBModal size="fluid" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
@@ -284,9 +309,12 @@ export default class Card extends Component<Props, State> {
                     <MDBContainer>
                         <MDBRow>
                             <MDBCol sm={"12"} md={"9"}>
-                                
                                 {this.cardDescription()}
                                 {this.attachments()}
+                                <MDBBtn id={'saveButton'} size={'sm'} onClick={this.toggleLabelCreator}
+                                    color="primary">Add label</MDBBtn>
+                                <MDBBtn id={'saveButton'} size={'sm'} 
+                                    color="primary">Edit label</MDBBtn>
                                 {this.activities()}
                                 <CommentsList cardId={this.state.card.id} afterModify={this.props.afterModify}/>
                             </MDBCol>

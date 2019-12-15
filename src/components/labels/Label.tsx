@@ -16,6 +16,7 @@ interface State {
     color: string | undefined
     labelNameInputOpen: boolean
     newLabelName: string
+    newLabelColor: string
 }
 
 export default class Label extends Component<Props, State> {
@@ -27,7 +28,8 @@ export default class Label extends Component<Props, State> {
             name: this.props.label.name,
             color: this.props.label.color,
             labelNameInputOpen: false,
-            newLabelName: ''
+            newLabelName: '',
+            newLabelColor: ''
         };
         this.bindMethods();
     }
@@ -37,7 +39,8 @@ export default class Label extends Component<Props, State> {
     }
 
     fetchComments() {
-        axios.get(`/api/cards/labels/${this.props.label.id}`)
+        console.log("pobrane");
+        axios.get(`/api/labels/${this.props.label.id}`)
             .then((resp) => {
                 this.setState({label: resp.data, isLoading: false});
             });
@@ -59,31 +62,16 @@ export default class Label extends Component<Props, State> {
         let name = e.target.value;
         this.setState({newLabelName: name})
     }
+    labelColorChanged(e: any) {
+        let color = e.target.value;
+        this.setState({newLabelColor: color})
+    }
 
     toggleLabelNameInput() {
         this.setState({labelNameInputOpen: !this.state.labelNameInputOpen})
     }
 
-    labelName() {
-        if (this.state.labelNameInputOpen) {
-            return <MDBFormInline>
-                <MDBIcon far icon="credit-card"/>
-                <input className="form-control" defaultValue={this.state.label.name || ''}
-                       onChange={this.labelNameChanged}/>
-                <MDBBtn color={'primary'} size={'sm'} onClick={this.updateLabelName}>
-                    <MDBIcon icon={'fas fa-check'}/>
-                </MDBBtn>
-                <MDBBtn color={'danger'} size={'sm'} onClick={this.toggleLabelNameInput}>
-                    <MDBIcon icon={'far fa-times-circle'}/>
-                </MDBBtn>
-            </MDBFormInline>
-        } else {
-            return <span>
-                <MDBIcon far icon="credit-card"/>
-                <span onClick={this.toggleNameInput}>{this.state.card.name}</span>
-            </span>;
-        }
-    }
+    
 
     view() {
         if (this.state.isLoading) {
