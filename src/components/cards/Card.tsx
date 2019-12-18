@@ -258,6 +258,13 @@ export default class Card extends Component<Props, State> {
         return link;
     }
 
+    handleShareToggle = () => {
+        let card = this.state.card;
+        card.is_shared = !card.is_shared;
+        this.setState({card: card});
+        this.updateCard(card);
+    };
+
     shareCard() {
         return <MDBPopover placement="top" popover clickable id="popper1">
             <MDBBtn size={'sm'} color={'primary'}>
@@ -266,6 +273,19 @@ export default class Card extends Component<Props, State> {
             <div>
                 <MDBPopoverHeader>Link to this card</MDBPopoverHeader>
                 <MDBPopoverBody>
+                    <div className='custom-control custom-switch'>
+                        <input
+                            type='checkbox'
+                            className='custom-control-input'
+                            id='customSwitches'
+                            readOnly
+                            checked={this.state.card.is_shared}
+                            onChange={this.handleShareToggle}
+                        />
+                        <label className='custom-control-label' htmlFor='customSwitches'>
+                            Toggle sharing
+                        </label>
+                    </div>
                     <div className="form-group">
                         <label htmlFor="formGroupExampleInput">Default input</label>
                         <input
