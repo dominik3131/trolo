@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
-import { MDBFormInline,MDBIcon,MDBBtn, MDBBadge, MDBCard, MDBCardBody, MDBRow } from "mdbreact";
+import { MDBBadge} from "mdbreact";
 import LabelModel from '../../data-models/LabelModel';
 
 interface Props {
@@ -38,13 +38,20 @@ export default class Label extends Component<Props, State> {
 
     }
 
-    fetchComments() {
-        console.log("pobrane");
+    fetchLabels() {
         axios.get(`/api/labels/${this.props.label.id}`)
             .then((resp) => {
                 this.setState({label: resp.data, isLoading: false});
             });
     }
+    updateLabel(label: LabelModel) {
+        this.setState({label: label});
+        axios.put(`/api/cards/${this.state.label.id}`, label)
+            .then((resp) => {
+                this.setState({label: resp.data});
+                this.props.afterModify();
+            });
+    };
 
     updateLabelName() {
         let label = this.state.label;
@@ -55,7 +62,7 @@ export default class Label extends Component<Props, State> {
 
     commentChanged() {
         this.props.afterModify();
-        this.fetchComments();
+        this.fetchLabels();
     }
 
     labelNameChanged(e: any) {
@@ -71,16 +78,14 @@ export default class Label extends Component<Props, State> {
         this.setState({labelNameInputOpen: !this.state.labelNameInputOpen})
     }
 
-    
-
     view() {
         if (this.state.isLoading) {
             return <MDBBadge>
                 <SmallSpinner/>
             </MDBBadge>
         }
-        return <MDBBadge color={this.state.color}>
-                {this.state.name}
+        return <MDBBadge color={this.state.label.color}>
+                {this.state.label.name}
             </MDBBadge>
     }
 

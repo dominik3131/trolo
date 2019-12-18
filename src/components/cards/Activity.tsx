@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios";
 import SmallSpinner from "../../utils/SmallSpinner";
-import { MDBCard, MDBCardBody, MDBRow } from "mdbreact";
+import { MDBCard, MDBCardBody} from "mdbreact";
 import ActivityModel from '../../data-models/ActivityModel';
 
 interface Props {

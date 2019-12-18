@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import CardModel from "../../data-models/CardModel";
 import Comment from "../comments/Comment";
 import Activity from "../cards/Activity";
-import Label from "../cards/Label";
 import ActivityModel from "../../data-models/ActivityModel"
 import LabelModel from "../../data-models/LabelModel"
 import axios from "axios";
@@ -16,13 +15,13 @@ import {
     MDBModalBody,
     MDBModalFooter,
     MDBModalHeader,
-    MDBRow,
-    MDBNavItem
+    MDBRow
 } from "mdbreact";
 import Attachments from "../Attachments/Attachments";
 import CommentsList from "../comments/CommentsList";
 import AttachmentInput from "../Attachments/AttachmentInput";
-import CreateLabel from './CreateLabel';
+import CreateLabel from "../labels/CreateLabel";
+import Label from "../labels/Label";
 
 interface Props {
     card: CardModel
@@ -39,7 +38,6 @@ interface State {
     toggleCreate: boolean
     newCardName: string
     newAttachmentAdded: boolean
-    toggleLabelCreatorC: boolean
     activities: ActivityModel[]
     labels: LabelModel[]
 }
@@ -56,7 +54,6 @@ export default class Card extends Component<Props, State> {
             toggleCreate: false,
             newCardName: '',
             newAttachmentAdded: false,
-            toggleLabelCreatorC: false,
             activities: [],
             labels: []
         };
@@ -76,7 +73,6 @@ export default class Card extends Component<Props, State> {
         this.attachmentAdded = this.attachmentAdded.bind(this);
         this.unarchiveCard = this.unarchiveCard.bind(this);
         this.createActivity = this.createActivity.bind(this);
-        this.toggleLabelCreator = this.toggleLabelCreator.bind(this);
     }
 
     fetchCard() {
@@ -125,10 +121,6 @@ export default class Card extends Component<Props, State> {
         let card = this.state.card;
         card.is_archive = !card.is_archive;
         this.setState({card: card});
-    }
-
-    toggleLabelCreator() {
-        this.setState({toggleLabelCreatorC: !this.state.toggleLabelCreatorC})
     }
 
     unarchiveCard() {
@@ -246,18 +238,6 @@ export default class Card extends Component<Props, State> {
         }
     }
 
-    labelCreator() {
-        console.log("witamy w piekle " + this.state.toggleLabelCreatorC);
-        if (this.state.toggleLabelCreatorC) {
-            console.log("create label output");
-            if (this.state.card.id) {
-                return <CreateLabel afterAdd={this.labelAdded.bind(this)}
-                                   toggleCreator={this.toggleLabelCreator.bind(this)}
-                                   cardId={this.state.card.id}/>
-            }
-        }
-    }
-
     labelAdded() {
 
     }
@@ -309,10 +289,10 @@ export default class Card extends Component<Props, State> {
                     <MDBContainer>
                         <MDBRow>
                             <MDBCol sm={"12"} md={"9"}>
+                                <CreateLabel afterAdd={this.labelAdded.bind(this)}
+                                             cardId={this.state.card.id as number}/>
                                 {this.cardDescription()}
                                 {this.attachments()}
-                                <MDBBtn id={'saveButton'} size={'sm'} onClick={this.toggleLabelCreator}
-                                    color="primary">Add label</MDBBtn>
                                 <MDBBtn id={'saveButton'} size={'sm'} 
                                     color="primary">Edit label</MDBBtn>
                                 {this.activities()}
