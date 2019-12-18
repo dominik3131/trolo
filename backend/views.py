@@ -11,6 +11,8 @@ from .serializers import *
 from .custom_permissions import CanGetTable,CanGetList
 from rest_framework.generics import CreateAPIView
 from rest_framework import permissions
+from django.db.models import Q
+
 
 class MethodSerializerView(object):
     '''
@@ -147,7 +149,7 @@ class CardsAttachmentList(generics.ListAPIView):
     serializer_class = AttachmentSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Attachment.objects.filter(card_id__id_list__id_table__id_owner= user).filter(card_id=self.kwargs['pk'])
+        return Attachment.objects.filter(Q(card_id__id_list__id_table__id_owner = user) | Q(card_id__is_shared=True)).filter(card_id=self.kwargs['pk'])
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     '''
@@ -180,7 +182,7 @@ class CardsCommentsList(generics.ListAPIView):
     serializer_class = CommentSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Comment.objects.filter(card_id__id_list__id_table__id_owner = user).filter(card_id=self.kwargs['pk'])
+        return Comment.objects.filter(Q(card_id__id_list__id_table__id_owner = user) | Q(card_id__is_shared=True)).filter(card_id=self.kwargs['pk'])
 
 
 class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
