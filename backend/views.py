@@ -107,7 +107,7 @@ class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         card = Card.objects.get(pk=self.kwargs['pk'])
         if card.is_shared:
-            return  Card.objects.filter(Q(id_list__id_table__id_owner= user))
+            return  Card.objects.filter(Q(id_list__id_table__id_owner= user) | Q(is_shared = True))
         else:
             return Card.objects.filter(pk =card.id)
 
