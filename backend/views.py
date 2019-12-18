@@ -91,7 +91,7 @@ class CardList(generics.ListCreateAPIView):
     serializer_class = CardSimpleSerializer
     def get_queryset(self):
         user = self.request.user
-        return Card.objects.filter(Q(id_list__id_table__id_owner= user)| Q(is_shared = True))
+        return Card.objects.filter(Q(id_list__id_table__id_owner= user))
 
 class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     '''
@@ -105,7 +105,11 @@ class CardDetail(MethodSerializerView, generics.RetrieveUpdateDestroyAPIView):
     }
     def get_queryset(self):
         user = self.request.user
-        return  Card.objects.filter(Q(id_list__id_table__id_owner= user)| Q(is_shared = True))
+        card = Card.objects.get(pk=self.kwargs['pk'])
+        if card.is_shared:
+            return  Card.objects.filter(Q(id_list__id_table__id_owner= user))
+        else:
+            return Card.objects.filter(pk =card.id)
 
 class CreateUserView(CreateAPIView):
 
