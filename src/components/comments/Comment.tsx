@@ -161,6 +161,7 @@ export default class Comment extends Component<Props, State> {
                     </a>
                 </div>;
             }
+            return <div>{content}</div>
         }
         return null;
     }

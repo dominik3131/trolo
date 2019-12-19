@@ -11,7 +11,7 @@ import {
     MDBModal,
     MDBModalBody,
     MDBModalFooter,
-    MDBModalHeader,
+    MDBModalHeader, MDBPopover, MDBPopoverBody, MDBPopoverHeader,
     MDBRow
 } from "mdbreact";
 import Attachments from "../Attachments/Attachments";
@@ -21,6 +21,8 @@ import AttachmentInput from "../Attachments/AttachmentInput";
 interface Props {
     card: CardModel
     afterModify: any
+    modalOpened?: boolean
+    shareToggleBlocked?: boolean
 }
 
 interface State {
@@ -38,7 +40,7 @@ export default class Card extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            modalOpened: false,
+            modalOpened: this.props.modalOpened ? this.props.modalOpened : false,
             isLoading: true,
             card: this.props.card,
             cardCopy: this.props.card,
@@ -232,6 +234,7 @@ export default class Card extends Component<Props, State> {
                                 {this.cardDeleteArchive()}
                                 <AttachmentInput cardId={this.state.card.id} afterAdd={this.attachmentAdded}
                                                  size={'lg'}/>
+                                {this.shareCard()}
                             </MDBCol>
                         </MDBRow>
                     </MDBContainer>
@@ -244,6 +247,60 @@ export default class Card extends Component<Props, State> {
                 </MDBModalFooter>
             </MDBModal>
         </MDBContainer>
+    }
+
+    getCardLink() {
+        let link = window.location.hostname;
+        if (window.location.port) {
+            link = link.concat(':', window.location.port)
+        }
+        let id = this.state.card.id as number;
+        link = link.concat('/card/', id.toString());
+        return link;
+    }
+
+    handleShareToggle = () => {
+        if(!this.props.shareToggleBlocked){
+            let card = this.state.card;
+            card.is_shared = !card.is_shared;
+            this.setState({card: card});
+            this.updateCard(card);
+        }
+    };
+
+    shareCard() {
+        return <MDBPopover placement="top" popover clickable id="popper1">
+            <MDBBtn size={'sm'} color={'primary'}>
+                <MDBIcon icon="share-alt"/> Share
+            </MDBBtn>
+            <div>
+                <MDBPopoverHeader>Link to this card</MDBPopoverHeader>
+                <MDBPopoverBody>
+                    <div className='custom-control custom-switch'>
+                        <input
+                            type='checkbox'
+                            className='custom-control-input'
+                            id='customSwitches'
+                            readOnly
+                            checked={this.state.card.is_shared}
+                            onChange={this.handleShareToggle}
+                        />
+                        <label className='custom-control-label' htmlFor='customSwitches'>
+                            Toggle sharing
+                        </label>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="formGroupExampleInput">Default input</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="formGroupExampleInput"
+                            value={this.getCardLink()}
+                        />
+                    </div>
+                </MDBPopoverBody>
+            </div>
+        </MDBPopover>
     }
 
     view() {

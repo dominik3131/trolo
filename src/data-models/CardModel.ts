@@ -7,4 +7,5 @@ export default class CardModel {
     description: string | undefined;
     id_list: number | undefined;
     is_archive: boolean | undefined;
+    is_shared: boolean | undefined;
 }
