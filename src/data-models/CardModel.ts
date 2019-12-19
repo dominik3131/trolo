@@ -11,4 +11,5 @@ export default class CardModel {
     is_archive: boolean | undefined;
     activities: ActivityModel[] | undefined;
     labels: LabelModel[] | undefined;
+    is_shared: boolean | undefined;
 }

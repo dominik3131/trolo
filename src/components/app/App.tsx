@@ -6,6 +6,7 @@ import Login from "../user/Login"
 import Logout from "../user/Logout"
 import {Route, Switch,Redirect} from 'react-router'
 import Table from "../tables/Table";
+import SharedCard from "../cards/SharedCard";
 
 const App: React.FC = () => {
     return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
                     <Route path="/tables/:id" component={Table}/>
                     <Route path="/login" component={Login}/>
                     <Route path="/logout" component={Logout}/>
+                    <Route path="/card/:id" component={SharedCard}/>
                     {/*<Route path="/settings" component={}/>*/}
                     {/*<Route path="/profile" component={}/>*/}
                 </Switch>
