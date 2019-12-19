@@ -13,6 +13,7 @@ interface State {
     card: CardModel
     isLoading: boolean
     noAccess: boolean
+    tableId: number | undefined
 }
 
 export default class SharedCard extends Component<Props, State> {
@@ -21,22 +22,33 @@ export default class SharedCard extends Component<Props, State> {
         this.state = {
             card: new CardModel(),
             isLoading: true,
-            noAccess: false
+            noAccess: false,
+            tableId: undefined
         };
-
         this.fetchCard();
     }
 
     fetchCard() {
         axios.get(`/api/cards/${this.props.match.params.id}`)
             .then((resp) => {
-                this.setState({card: resp.data, isLoading: false});
+                this.setState({card: resp.data});
+                this.fetchList(resp.data.id_list);
             })
             .catch(() => {
                 this.setState({noAccess: true, isLoading: false})
             });
     }
 
+    fetchList(id:number) {
+        axios.get(`/api/lists/${id}`, {
+            headers: {
+                'Authorization': 'token' + localStorage.getItem('user_token')
+            }
+        })
+            .then((resp) => {
+                this.setState({tableId: resp.data.id_table, isLoading: false});
+            });
+    }
 
     render() {
         if (this.state.isLoading) {
@@ -46,7 +58,7 @@ export default class SharedCard extends Component<Props, State> {
                 Card doesn't exist or you don't have access to it
             </MDBAlert>
         }
-        return <Card shareToggleBlocked={true} card={this.state.card} afterModify={() => {
+        return <Card afterAdd={()=>{}} tableId={this.state.tableId as number} shareToggleBlocked={true} card={this.state.card} afterModify={() => {
         }} modalOpened={true}/>
     };
 }
