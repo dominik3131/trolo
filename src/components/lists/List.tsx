@@ -193,7 +193,7 @@ export default class List extends Component<Props, State> {
             this.state.list.cards
                 .filter(card => !card.is_archive)
                 .forEach(card => {
-                        items.push(<Card afterModify={this.cardDeleted.bind(this)} afterAdd={this.cardAdded.bind(this)} key={card.id} card={card}/>);
+                        items.push(<Card tableId={this.state.list.id_table as number} afterModify={this.cardDeleted.bind(this)} afterAdd={this.cardAdded.bind(this)} key={card.id} card={card}/>);
                     }
                 )
         }

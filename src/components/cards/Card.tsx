@@ -22,9 +22,11 @@ import CommentsList from "../comments/CommentsList";
 import AttachmentInput from "../Attachments/AttachmentInput";
 import CreateLabel from "../labels/CreateLabel";
 import LabelList from "../labels/LabelList";
+import CardLabelAdder from "./CardLabelAdder";
 
 interface Props {
     card: CardModel
+    tableId: number;
     afterModify: any
     afterAdd: any
 }
@@ -84,11 +86,17 @@ export default class Card extends Component<Props, State> {
 
     updateCard(card: CardModel) {
         this.setState({card: card});
+        if (card.labels) {
+            // @ts-ignore
+            card.labels = card.labels.map(label => label.id)
+        }
         axios.put(`/api/cards/${this.state.card.id}`, card)
             .then((resp) => {
                 this.setState({card: resp.data});
                 this.props.afterModify();
-            });  
+                this.fetchCard();
+            });
+
     };
 
     deleteCard() {
@@ -238,12 +246,18 @@ export default class Card extends Component<Props, State> {
         }
     }
 
-    labelAdded() {
+    labelCreated() {
 
     }
 
-    labelChanged(){
-
+    addLabel(label: LabelModel) {
+        if (this.state.card.labels && !this.state.card.labels.includes(label)) {
+            let card = this.state.card;
+            if (card.labels) {
+                card.labels.push(label);
+            }
+            this.updateCard(card);
+        }
     }
 
     activityChanged() {
@@ -257,15 +271,14 @@ export default class Card extends Component<Props, State> {
             this.state.card.activities
                 .forEach(activity => {
                         items.push(<Activity afterModify={this.activityChanged.bind(this)} key={activity.id}
-                            activity={activity}/>);
+                                             activity={activity}/>);
                     }
                 )
         }
         return items
     }
-  
 
-    
+
     modal() {
         return <MDBContainer>
             <MDBModal size="fluid" isOpen={this.state.modalOpened} toggle={this.toggleModal}>
@@ -277,12 +290,18 @@ export default class Card extends Component<Props, State> {
                         <MDBRow>
                             <MDBCol sm={"12"} md={"9"}>
                                 {this.renderLabels()}
-                                <CreateLabel afterAdd={this.labelAdded.bind(this)}
-                                             cardId={this.state.card.id as number}/>
+                                <MDBFormInline>
+                                    <CreateLabel
+                                        tableId={this.props.tableId}
+                                        afterAdd={this.labelCreated.bind(this)}
+                                        cardId={this.state.card.id as number}/>
+                                    <CardLabelAdder addLabel={this.addLabel.bind(this)} tableId={this.props.tableId}
+                                                    card={this.state.card}/>
+                                </MDBFormInline>
                                 {this.cardDescription()}
                                 {this.attachments()}
-                                <MDBBtn id={'saveButton'} size={'sm'} 
-                                    color="primary">Edit label</MDBBtn>
+                                <MDBBtn id={'saveButton'} size={'sm'}
+                                        color="primary">Edit label</MDBBtn>
                                 {this.activities()}
                                 <CommentsList cardId={this.state.card.id} afterModify={this.props.afterModify}/>
                             </MDBCol>
@@ -337,8 +356,8 @@ export default class Card extends Component<Props, State> {
         </MDBCard>
     }
 
-    renderLabels(){
-        if(this.state.card.labels){
+    renderLabels() {
+        if (this.state.card.labels) {
             return <LabelList labels={this.state.card.labels}/>;
         }
     }

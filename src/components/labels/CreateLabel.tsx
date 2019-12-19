@@ -10,6 +10,7 @@ axios.defaults.withCredentials = true;
 
 interface Props {
     cardId: number
+    tableId: number
     afterAdd: any
 }
 
@@ -37,8 +38,7 @@ export default class CreateLabel extends Component<Props, State> {
     createLabel() {
         let label = new LabelModel();
         label.name = this.state.labelName;
-        label.id_table = 6;
-        //TODO TABLE ID
+        label.id_table = this.props.tableId;
         label.color = this.state.labelColor;
         this.toggleLabelNameInput();
         axios.post('/api/labels', label).then(
