@@ -22,6 +22,7 @@ interface Props {
     card: CardModel
     afterModify: any
     modalOpened?: boolean
+    shareToggleBlocked?: boolean
 }
 
 interface State {
@@ -259,10 +260,12 @@ export default class Card extends Component<Props, State> {
     }
 
     handleShareToggle = () => {
-        let card = this.state.card;
-        card.is_shared = !card.is_shared;
-        this.setState({card: card});
-        this.updateCard(card);
+        if(!this.props.shareToggleBlocked){
+            let card = this.state.card;
+            card.is_shared = !card.is_shared;
+            this.setState({card: card});
+            this.updateCard(card);
+        }
     };
 
     shareCard() {

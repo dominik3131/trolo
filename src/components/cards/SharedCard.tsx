@@ -46,7 +46,7 @@ export default class SharedCard extends Component<Props, State> {
                 Card doesn't exist or you don't have access to it
             </MDBAlert>
         }
-        return <Card card={this.state.card} afterModify={() => {
+        return <Card shareToggleBlocked={true} card={this.state.card} afterModify={() => {
         }} modalOpened={true}/>
     };
 }
