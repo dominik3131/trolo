@@ -10,6 +10,11 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='index'),
+    path('login/', index, name='index'),
+    path('logout/', index, name='index'),
+    path('tables/', index, name='index'),
+    path('tables/<int:pk>', index, name='index'),
+    path('card/<uuid:pk>', index, name='index'),
     path('admin/', admin.site.urls),
 
     path('api/tables/', TableList.as_view()),

@@ -80,6 +80,7 @@ class Card(models.Model):
     id_list = models.ForeignKey(Lista, related_name='cards',on_delete=models.CASCADE)
     lookup_field = "name"
     labels = models.ManyToManyField("backend.Label", related_name='labels',blank=True)
+    is_shared = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
