@@ -21,7 +21,7 @@ import Attachments from "../Attachments/Attachments";
 import CommentsList from "../comments/CommentsList";
 import AttachmentInput from "../Attachments/AttachmentInput";
 import CreateLabel from "../labels/CreateLabel";
-import Label from "../labels/Label";
+import LabelList from "../labels/LabelList";
 
 interface Props {
     card: CardModel
@@ -246,19 +246,6 @@ export default class Card extends Component<Props, State> {
 
     }
 
-    renderLabels() {
-        const items: any[] = [];
-        if (this.state.labels) {
-            this.state.labels
-                .forEach(label => {
-                        items.push(<Label afterModify={this.labelChanged.bind(this)} key={label.id}
-                            label={label}/>);
-                    }
-                )
-        }
-        return items
-    }
-
     activityChanged() {
         this.props.afterModify();
         //this.fetchActivities();
@@ -289,6 +276,7 @@ export default class Card extends Component<Props, State> {
                     <MDBContainer>
                         <MDBRow>
                             <MDBCol sm={"12"} md={"9"}>
+                                {this.renderLabels()}
                                 <CreateLabel afterAdd={this.labelAdded.bind(this)}
                                              cardId={this.state.card.id as number}/>
                                 {this.cardDescription()}
@@ -349,7 +337,11 @@ export default class Card extends Component<Props, State> {
         </MDBCard>
     }
 
-    
+    renderLabels(){
+        if(this.state.card.labels){
+            return <LabelList labels={this.state.card.labels}/>;
+        }
+    }
 
     renderComments() {
         const items: any[] = [];
