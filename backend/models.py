@@ -114,8 +114,8 @@ class Activity(models.Model):
     editable = models.BooleanField(default=False)
 
 class Label(models.Model):
-    name = models.CharField(max_length=50)
-    color = models.CharField(validators=[RegexValidator('#\d{6}', message='Not a hex color', code='nomatch')], max_length=7)
+    name = models.CharField(max_length=50,blank=True)
+    color = models.CharField(validators=[RegexValidator('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', message='Not a hex color', code='nomatch')], max_length=7)
     id_table = models.ForeignKey(Table,on_delete = models.CASCADE,related_name='labels',null=True)
 
     def __str__(self):

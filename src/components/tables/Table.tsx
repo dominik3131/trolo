@@ -332,11 +332,10 @@ export default class Table extends Component<Props, State> {
                     }
                 )
         }
-        return (
-            <div className={'row'}>
-                {items}
-            </div>
-        )
+        return <div className={'row'}>
+            {items}
+        </div>
+
     }
 
     render() {
